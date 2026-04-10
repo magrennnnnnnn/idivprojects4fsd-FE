@@ -1,19 +1,19 @@
 import { useState } from "react";
 
-function RegisterForm() {
+function LoginForm() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState("");
     const [error, setError] = useState("");
 
-    const handleRegister = async (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
 
         setMessage("");
         setError("");
 
         try {
-            const response = await fetch("http://localhost:8080/auth/register", {
+            const response = await fetch("http://localhost:8080/auth/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -26,14 +26,15 @@ function RegisterForm() {
 
             if (!response.ok) {
                 const errorText = await response.text();
-                throw new Error(errorText || "Registration failed");
+                throw new Error(errorText || "Login failed");
             }
 
             const data = await response.json();
 
-            setMessage(`User created successfully: ${data.email}`);
+            setMessage(`Welcome back: ${data.email}`);
             setEmail("");
             setPassword("");
+
         } catch (err) {
             setError(err.message);
         }
@@ -43,9 +44,9 @@ function RegisterForm() {
         <div className="register-page">
             <div className="register-card">
                 <h1 className="title">ProLink</h1>
-                <p className="subtitle">Create your account</p>
+                <p className="subtitle">Login to your account</p>
 
-                <form onSubmit={handleRegister} className="register-form">
+                <form onSubmit={handleLogin} className="register-form">
                     <label>Email</label>
                     <input
                         type="email"
@@ -64,18 +65,18 @@ function RegisterForm() {
                         required
                     />
 
-                    <button type="submit">Register</button>
+                    <button type="submit">Login</button>
                 </form>
 
                 {message && <p className="success-message">{message}</p>}
                 {error && <p className="error-message">{error}</p>}
 
                 <p className="redirect-text">
-                    Already have an account? <a href="/login">Login</a>
+                    Don’t have an account? <a href="/">Register</a>
                 </p>
             </div>
         </div>
     );
 }
 
-export default RegisterForm;
+export default LoginForm;
