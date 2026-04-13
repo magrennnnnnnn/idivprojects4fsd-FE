@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 function RegisterForm() {
     const [email, setEmail] = useState("");
@@ -71,7 +72,7 @@ function RegisterForm() {
                 {error && <p className="error-message">{error}</p>}
 
                 <p className="redirect-text">
-                    Already have an account? <a href="/login">Login</a>
+                    Already have an account? <Link to="/login">Login</Link>
                 </p>
             </div>
         </div>
