@@ -114,3 +114,87 @@ body {
 .redirect-text a:hover {
   text-decoration: underline;
 }
+
+.profile-page {
+  min-height: 100vh;
+  background: #000000;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 20px;
+}
+
+.profile-card {
+  width: 100%;
+  max-width: 800px;
+  background-color: #111111;
+  border: 1px solid #222222;
+  border-radius: 18px;
+  padding: 32px;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.04);
+}
+
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.profile-name {
+  font-size: 30px;
+  color: #ffffff;
+}
+
+.profile-location {
+  color: #aaaaaa;
+  margin-bottom: 24px;
+  font-size: 16px;
+}
+
+.profile-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #222222;
+}
+
+.profile-section h2 {
+  margin-bottom: 10px;
+  color: #ffffff;
+}
+
+.profile-section p {
+  color: #dddddd;
+  line-height: 1.6;
+}
+
+.profile-textarea {
+  background-color: #1a1a1a;
+  color: white;
+  border: 1px solid #333333;
+  padding: 12px;
+  border-radius: 10px;
+  outline: none;
+  min-height: 120px;
+  resize: vertical;
+  font-family: Arial, sans-serif;
+}
+
+.edit-button,
+.cancel-button {
+  margin-top: 10px;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 10px;
+  background-color: #ffffff;
+  color: #000000;
+  font-weight: bold;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.edit-button:hover,
+.cancel-button:hover {
+  opacity: 0.85;
+}

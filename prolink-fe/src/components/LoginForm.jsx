@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function LoginForm() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState("");
     const [error, setError] = useState("");
+    const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -33,8 +34,14 @@ function LoginForm() {
             const data = await response.json();
 
             setMessage(`Welcome back: ${data.email}`);
-            setEmail("");
-            setPassword("");
+
+            const profileResponse = await fetch(`http://localhost:8080/profiles/user/${data.id}`);
+
+            if (profileResponse.ok) {
+                navigate(`/profile/${data.id}`);
+            } else {
+                navigate("/profile/create");
+            }
 
         } catch (err) {
             setError(err.message);
