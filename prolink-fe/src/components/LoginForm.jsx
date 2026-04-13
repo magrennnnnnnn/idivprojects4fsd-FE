@@ -33,6 +33,8 @@ function LoginForm() {
 
             const data = await response.json();
 
+            localStorage.setItem("user", JSON.stringify(data));
+
             setMessage(`Welcome back: ${data.email}`);
 
             const profileResponse = await fetch(`http://localhost:8080/profiles/user/${data.id}`);
