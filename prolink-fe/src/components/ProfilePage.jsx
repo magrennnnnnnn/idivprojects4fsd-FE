@@ -10,7 +10,7 @@ function ProfilePage() {
     const [error, setError] = useState("");
 
     useEffect(() => {
-        fetchProfile();
+        void fetchProfile();
     }, []);
 
     const fetchProfile = async () => {

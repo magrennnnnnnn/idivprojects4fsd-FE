@@ -12,7 +12,7 @@ function App() {
           <Route path="/" element={<RegisterForm />} />
           <Route path="/login" element={<LoginForm />} />
             <Route path="/profile/create" element={<CreateProfileForm />} />
-            <Route path="/profile/:userId" element={<ProfilePage />} />
+            <Route path="/profile" element={<ProfilePage />} />
         </Routes>
       </BrowserRouter>
   );
