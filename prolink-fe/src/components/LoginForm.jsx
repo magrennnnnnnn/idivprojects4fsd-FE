@@ -17,12 +17,13 @@ function LoginForm() {
         try {
             const response = await fetch("http://localhost:8080/auth/login", {
                 method: "POST",
+                credentials: "include",
                 headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    email: email,
-                    password: password
+                    email,
+                    password
                 })
             });
 
@@ -32,17 +33,20 @@ function LoginForm() {
             }
 
             const data = await response.json();
-
-            localStorage.setItem("user", JSON.stringify(data));
-
             setMessage(`Welcome back: ${data.email}`);
 
-            const profileResponse = await fetch(`http://localhost:8080/profiles/user/${data.id}`);
+            const profileResponse = await fetch("http://localhost:8080/profiles/me", {
+                method: "GET",
+                credentials: "include"
+            });
 
             if (profileResponse.ok) {
-                navigate(`/profile/${data.id}`);
-            } else {
+                navigate("/profile");
+            } else if (profileResponse.status === 404) {
                 navigate("/profile/create");
+            } else {
+                const errorText = await profileResponse.text();
+                throw new Error(errorText || "Could not check profile");
             }
 
         } catch (err) {
@@ -82,7 +86,7 @@ function LoginForm() {
                 {error && <p className="error-message">{error}</p>}
 
                 <p className="redirect-text">
-                    Don’t have an account?  <Link to="/">Register</Link>
+                    Don’t have an account? <Link to="/">Register</Link>
                 </p>
             </div>
         </div>

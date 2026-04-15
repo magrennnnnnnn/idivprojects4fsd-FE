@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 
 function ProfilePage() {
-    const { userId } = useParams();
-
     const [profile, setProfile] = useState(null);
     const [editMode, setEditMode] = useState(false);
     const [name, setName] = useState("");
@@ -14,11 +11,14 @@ function ProfilePage() {
 
     useEffect(() => {
         fetchProfile();
-    }, [userId]);
+    }, []);
 
     const fetchProfile = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/profiles/user/${userId}`);
+            const response = await fetch("http://localhost:8080/profiles/me", {
+                method: "GET",
+                credentials: "include"
+            });
 
             if (!response.ok) {
                 throw new Error("Could not load profile");
@@ -41,8 +41,9 @@ function ProfilePage() {
         setError("");
 
         try {
-            const response = await fetch(`http://localhost:8080/profiles/${profile.idProfile}`, {
+            const response = await fetch("http://localhost:8080/profiles/me", {
                 method: "PUT",
+                credentials: "include",
                 headers: {
                     "Content-Type": "application/json"
                 },

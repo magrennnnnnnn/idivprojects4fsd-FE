@@ -10,27 +10,20 @@ function CreateProfileForm() {
 
     const navigate = useNavigate();
 
-    const user = JSON.parse(localStorage.getItem("user"));
-
     const handleCreateProfile = async (e) => {
         e.preventDefault();
 
         setMessage("");
         setError("");
 
-        if (!user) {
-            setError("No logged-in user found.");
-            return;
-        }
-
         try {
             const response = await fetch("http://localhost:8080/profiles", {
                 method: "POST",
+                credentials: "include",
                 headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    userId: user.id,
                     name,
                     location,
                     personalDetails
@@ -42,10 +35,10 @@ function CreateProfileForm() {
                 throw new Error(errorText || "Profile creation failed");
             }
 
-            const data = await response.json();
+            await response.json();
 
             setMessage("Profile created successfully!");
-            navigate(`/profile/${user.id}`);
+            navigate("/profile");
         } catch (err) {
             setError(err.message);
         }
