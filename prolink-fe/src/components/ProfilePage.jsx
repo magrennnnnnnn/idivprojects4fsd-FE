@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import AddWorkForm from "./AddWorkForm";
+import AddEducationForm from "./AddEducationForm";
+import AddCourseForm from "./AddCourseForm";
 
 function ProfilePage() {
     const [profile, setProfile] = useState(null);
@@ -138,6 +141,10 @@ function ProfilePage() {
 
                 {message && <p className="success-message">{message}</p>}
                 {error && <p className="error-message">{error}</p>}
+
+                <AddWorkForm profileId={profile.idProfile} />
+                <AddEducationForm profileId={profile.idProfile} />
+                <AddCourseForm profileId={profile.idProfile} />
             </div>
         </div>
     );
