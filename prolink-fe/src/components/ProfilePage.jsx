@@ -5,7 +5,11 @@ import AddCourseForm from "./AddCourseForm";
 
 function ProfilePage() {
     const [profile, setProfile] = useState(null);
+    const [workList, setWorkList] = useState([]);
+    const [educationList, setEducationList] = useState([]);
+    const [courseList, setCourseList] = useState([]);
     const [editMode, setEditMode] = useState(false);
+
     const [name, setName] = useState("");
     const [location, setLocation] = useState("");
     const [personalDetails, setPersonalDetails] = useState("");
@@ -13,25 +17,58 @@ function ProfilePage() {
     const [error, setError] = useState("");
 
     useEffect(() => {
-        void fetchProfile();
+        void fetchAllData();
     }, []);
 
-    const fetchProfile = async () => {
+    const fetchAllData = async () => {
         try {
-            const response = await fetch("http://localhost:8080/profiles/me", {
+            const profileResponse = await fetch("http://localhost:8080/profiles/me", {
                 method: "GET",
                 credentials: "include"
             });
 
-            if (!response.ok) {
+            if (!profileResponse.ok) {
                 throw new Error("Could not load profile");
             }
 
-            const data = await response.json();
-            setProfile(data);
-            setName(data.name);
-            setLocation(data.location);
-            setPersonalDetails(data.personalDetails);
+            const profileData = await profileResponse.json();
+
+            setProfile(profileData);
+            setName(profileData.name);
+            setLocation(profileData.location);
+            setPersonalDetails(profileData.personalDetails);
+
+            const profileId = profileData.idProfile;
+
+            const [workResponse, educationResponse, courseResponse] = await Promise.all([
+                fetch(`http://localhost:8080/work/profile/${profileId}`, {
+                    method: "GET",
+                    credentials: "include"
+                }),
+                fetch(`http://localhost:8080/education/profile/${profileId}`, {
+                    method: "GET",
+                    credentials: "include"
+                }),
+                fetch(`http://localhost:8080/course/profile/${profileId}`, {
+                    method: "GET",
+                    credentials: "include"
+                })
+            ]);
+
+            if (workResponse.ok) {
+                const workData = await workResponse.json();
+                setWorkList(workData);
+            }
+
+            if (educationResponse.ok) {
+                const educationData = await educationResponse.json();
+                setEducationList(educationData);
+            }
+
+            if (courseResponse.ok) {
+                const courseData = await courseResponse.json();
+                setCourseList(courseData);
+            }
         } catch (err) {
             setError(err.message);
         }
@@ -66,6 +103,8 @@ function ProfilePage() {
             setProfile(updatedProfile);
             setEditMode(false);
             setMessage("Profile updated successfully!");
+
+            await fetchAllData();
         } catch (err) {
             setError(err.message);
         }
@@ -99,6 +138,55 @@ function ProfilePage() {
                         <div className="profile-section">
                             <h2>About</h2>
                             <p>{profile.personalDetails}</p>
+                        </div>
+
+                        <div className="profile-section">
+                            <h2>Work Experience</h2>
+                            {workList.length === 0 ? (
+                                <p>No work experience added yet.</p>
+                            ) : (
+                                workList.map((work) => (
+                                    <div key={work.idProfileWork} className="entry-card">
+                                        <h3>{work.workInstitutionName}</h3>
+                                        <p>{work.work}</p>
+                                        <p>{work.workLocation} • {work.workScheduleType}</p>
+                                        <p>{work.startDateWork} - {work.onGoingWork ? "Present" : work.endDateWork}</p>
+                                        <p>{work.workSkills}</p>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+
+                        <div className="profile-section">
+                            <h2>Education</h2>
+                            {educationList.length === 0 ? (
+                                <p>No education added yet.</p>
+                            ) : (
+                                educationList.map((education) => (
+                                    <div key={education.idProfileEducation} className="entry-card">
+                                        <h3>{education.institutionName}</h3>
+                                        <p>{education.degree}</p>
+                                        <p>{education.startDateSchool} - {education.onGoingSchool ? "Present" : education.endDateSchool}</p>
+                                        <p>{education.educationalSkills}</p>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+
+                        <div className="profile-section">
+                            <h2>Courses</h2>
+                            {courseList.length === 0 ? (
+                                <p>No courses added yet.</p>
+                            ) : (
+                                courseList.map((course) => (
+                                    <div key={course.idProfileCourse} className="entry-card">
+                                        <h3>{course.courseName}</h3>
+                                        <p>{course.course}</p>
+                                        <p>{course.startDateCourse} - {course.endDateCourse}</p>
+                                        <p>{course.courseSkills}</p>
+                                    </div>
+                                ))
+                            )}
                         </div>
                     </>
                 ) : (
@@ -136,15 +224,15 @@ function ProfilePage() {
                         <button className="cancel-button" onClick={() => setEditMode(false)}>
                             Cancel
                         </button>
+
+                        <AddWorkForm profileId={profile.idProfile} onWorkAdded={fetchAllData} />
+                        <AddEducationForm profileId={profile.idProfile} onEducationAdded={fetchAllData} />
+                        <AddCourseForm profileId={profile.idProfile} onCourseAdded={fetchAllData} />
                     </>
                 )}
 
                 {message && <p className="success-message">{message}</p>}
                 {error && <p className="error-message">{error}</p>}
-
-                <AddWorkForm profileId={profile.idProfile} />
-                <AddEducationForm profileId={profile.idProfile} />
-                <AddCourseForm profileId={profile.idProfile} />
             </div>
         </div>
     );
