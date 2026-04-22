@@ -126,107 +126,7 @@ body {
 
 .profile-card {
   width: 100%;
-  max-width: 800px;
-  background-color: #111111;
-  border: 1px solid #222222;
-  border-radius: 18px;
-  padding: 32px;
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.04);
-}
-
-.profile-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 12px;
-}
-
-.profile-name {
-  font-size: 30px;
-  color: #ffffff;
-}
-
-.profile-location {
-  color: #aaaaaa;
-  margin-bottom: 24px;
-  font-size: 16px;
-}
-
-.profile-section {
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 1px solid #222222;
-}
-
-.profile-section h2 {
-  margin-bottom: 10px;
-  color: #ffffff;
-}
-
-.profile-section p {
-  color: #dddddd;
-  line-height: 1.6;
-}
-
-.profile-textarea {
-  background-color: #1a1a1a;
-  color: white;
-  border: 1px solid #333333;
-  padding: 12px;
-  border-radius: 10px;
-  outline: none;
-  min-height: 120px;
-  resize: vertical;
-  font-family: Arial, sans-serif;
-}
-
-.edit-button,
-.cancel-button {
-  margin-top: 10px;
-  padding: 12px 16px;
-  border: none;
-  border-radius: 10px;
-  background-color: #ffffff;
-  color: #000000;
-  font-weight: bold;
-  cursor: pointer;
-  transition: opacity 0.2s ease;
-}
-
-.edit-button:hover,
-.cancel-button:hover {
-  opacity: 0.85;
-}
-.register-form select,
-.register-form textarea {
-  background-color: #1a1a1a;
-  color: white;
-  border: 1px solid #333333;
-  padding: 12px;
-  border-radius: 10px;
-  outline: none;
-  width: 100%;
-}
-
-.register-form textarea {
-  min-height: 120px;
-  resize: vertical;
-  font-family: Arial, sans-serif;
-}
-
-.profile-page {
-  min-height: 100vh;
-  background: #000000;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 40px 20px;
-}
-
-.profile-card {
-  width: 100%;
-  max-width: 900px;
+  max-width: 950px;
   background-color: #111111;
   border: 1px solid #222222;
   border-radius: 18px;
@@ -269,18 +169,38 @@ body {
   line-height: 1.6;
 }
 
-.profile-textarea {
+.profile-textarea,
+.register-form textarea,
+.register-form select,
+.register-form input {
   background-color: #1a1a1a;
   color: white;
   border: 1px solid #333333;
   padding: 12px;
   border-radius: 10px;
   outline: none;
+  width: 100%;
+}
+
+.profile-textarea,
+.register-form textarea {
   min-height: 120px;
   resize: vertical;
   font-family: Arial, sans-serif;
 }
 
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.register-form label {
+  font-size: 14px;
+  color: #dddddd;
+}
+
+.register-form button,
 .edit-button,
 .cancel-button {
   margin-top: 10px;
@@ -294,21 +214,10 @@ body {
   transition: opacity 0.2s ease;
 }
 
+.register-form button:hover,
 .edit-button:hover,
 .cancel-button:hover {
   opacity: 0.85;
-}
-
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: #dddddd;
-  font-size: 14px;
-}
-
-.checkbox-label input {
-  width: auto;
 }
 
 .entry-card {
@@ -328,4 +237,28 @@ body {
   color: #cccccc;
   margin-bottom: 6px;
   line-height: 1.5;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #dddddd;
+  font-size: 14px;
+}
+
+.checkbox-label input {
+  width: auto;
+}
+
+.success-message {
+  margin-top: 18px;
+  color: #4caf50;
+  text-align: center;
+}
+
+.error-message {
+  margin-top: 18px;
+  color: #ff4d4d;
+  text-align: center;
 }
