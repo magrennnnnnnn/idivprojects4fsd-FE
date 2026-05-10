@@ -41,7 +41,7 @@ function LoginForm() {
             });
 
             if (profileResponse.ok) {
-                navigate("/profile");
+                navigate("/feed");
             } else if (profileResponse.status === 404) {
                 navigate("/profile/create");
             } else {

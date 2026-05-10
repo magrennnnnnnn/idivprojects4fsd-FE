@@ -38,7 +38,7 @@ function CreateProfileForm() {
             await response.json();
 
             setMessage("Profile created successfully!");
-            navigate("/profile");
+            navigate("/feed");
         } catch (err) {
             setError(err.message);
         }

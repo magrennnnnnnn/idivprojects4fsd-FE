@@ -11,8 +11,10 @@ function App() {
         <Routes>
           <Route path="/" element={<RegisterForm />} />
           <Route path="/login" element={<LoginForm />} />
+            <Route path="/feed" element={<FeedPage />} />
             <Route path="/profile/create" element={<CreateProfileForm />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/profile/posts" element={<PostHistoryPage />} />
         </Routes>
       </BrowserRouter>
   );

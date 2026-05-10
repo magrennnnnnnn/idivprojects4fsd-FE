@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 function ProfilePage() {
     const [profile, setProfile] = useState(null);
@@ -467,9 +468,28 @@ function ProfilePage() {
                     <>
                         <div className="profile-header">
                             <h1 className="profile-name">{profile.name}</h1>
-                            <button className="edit-button" onClick={() => setEditMode(true)}>
-                                Edit Profile
-                            </button>
+
+                            <div className="profile-actions">
+                                <Link to="/feed" className="edit-button link-button">
+                                    Feed
+                                </Link>
+
+                                <div className="settings-dropdown">
+                                    <button className="edit-button" type="button">
+                                        Settings
+                                    </button>
+
+                                    <div className="settings-menu">
+                                        <Link to="/profile/posts" className="settings-menu-item">
+                                            Posts History
+                                        </Link>
+                                    </div>
+                                </div>
+
+                                <button className="edit-button" onClick={() => setEditMode(true)}>
+                                    Edit Profile
+                                </button>
+                            </div>
                         </div>
 
                         <p className="profile-location">{profile.location}</p>
