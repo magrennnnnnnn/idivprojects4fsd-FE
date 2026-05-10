@@ -467,7 +467,10 @@ function ProfilePage() {
                 {!editMode ? (
                     <>
                         <div className="profile-header">
-                            <h1 className="profile-name">{profile.name}</h1>
+                            <div>
+                                <h1 className="profile-name">{profile.name}</h1>
+                                <p className="profile-location">{profile.location}</p>
+                            </div>
 
                             <div className="profile-actions">
                                 <Link to="/feed" className="edit-button link-button">

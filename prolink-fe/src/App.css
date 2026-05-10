@@ -263,6 +263,10 @@ body {
   text-align: center;
 }
 
+.avatar-link {
+  text-decoration: none;
+}
+
 .feed-page {
   min-height: 100vh;
   background: #000000;
@@ -275,25 +279,22 @@ body {
   display: flex;
   align-items: center;
   gap: 28px;
-  padding: 0 24px;
+  padding: 0 48px;
   background: #000000;
-  position: sticky;
-  top: 0;
-  z-index: 20;
 }
 
 .prolink-logo {
   color: #f5f5f5;
-  font-size: 32px;
+  font-size: 34px;
   font-weight: 800;
   text-decoration: none;
   letter-spacing: -1px;
 }
 
 .prolink-search {
-  width: 620px;
-  max-width: 55vw;
-  height: 50px;
+  width: 720px;
+  max-width: 58vw;
+  height: 54px;
   border-radius: 10px;
   background: #15161a;
   border: 1px solid #24262b;
@@ -301,7 +302,7 @@ body {
   align-items: center;
   gap: 12px;
   padding: 0 18px;
-  color: #8f93a0;
+  color: #a4a8b5;
 }
 
 .prolink-search input {
@@ -314,7 +315,7 @@ body {
 }
 
 .prolink-search input::placeholder {
-  color: #8f93a0;
+  color: #a4a8b5;
 }
 
 .topbar-actions {
@@ -326,14 +327,14 @@ body {
 
 .notification-dot {
   color: #4b7dff;
-  font-size: 20px;
+  font-size: 22px;
 }
 
 .small-avatar,
 .composer-avatar,
 .post-author-avatar {
-  width: 50px;
-  height: 50px;
+  width: 58px;
+  height: 58px;
   border-radius: 50%;
   border: 1px solid #2b2d33;
   background: #18191d;
@@ -344,31 +345,40 @@ body {
   font-weight: 700;
 }
 
+.small-avatar {
+  width: 56px;
+  height: 56px;
+}
+
 .prolink-nav {
-  height: 80px;
+  height: 96px;
   border-bottom: 1px solid #171717;
   display: flex;
   justify-content: center;
   align-items: end;
-  gap: 70px;
+  gap: 86px;
   background: #000000;
 }
 
+.prolink-nav.simple-nav {
+  gap: 120px;
+}
+
 .nav-item {
-  min-width: 80px;
-  color: #8f93a0;
+  min-width: 86px;
+  color: #a4a8b5;
   text-decoration: none;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  padding-bottom: 12px;
-  font-size: 16px;
+  gap: 8px;
+  padding-bottom: 18px;
+  font-size: 17px;
   border-bottom: 3px solid transparent;
 }
 
 .nav-item span {
-  font-size: 26px;
+  font-size: 24px;
   line-height: 1;
 }
 
@@ -379,8 +389,14 @@ body {
 }
 
 .feed-shell {
-  width: min(1020px, calc(100% - 32px));
-  margin: 12px auto 60px;
+  width: min(1110px, calc(100% - 64px));
+  margin: 16px auto 64px;
+}
+
+.feed-status-message {
+  color: #a4a8b5;
+  margin-bottom: 14px;
+  text-align: left;
 }
 
 .post-composer-card,
@@ -389,16 +405,16 @@ body {
   background: #050506;
   border: 1px solid #22242a;
   border-radius: 18px;
-  margin-bottom: 22px;
+  margin-bottom: 24px;
 }
 
 .post-composer-card {
-  padding: 22px;
+  padding: 24px;
 }
 
 .composer-main {
   display: flex;
-  gap: 18px;
+  gap: 22px;
   align-items: flex-start;
 }
 
@@ -406,7 +422,7 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 
 .composer-title,
@@ -418,28 +434,36 @@ body {
   border-radius: 10px;
   outline: none;
   font-family: Arial, sans-serif;
+  box-shadow: none;
 }
 
 .composer-title {
-  height: 44px;
-  padding: 0 16px;
-  font-size: 16px;
+  height: 52px;
+  padding: 0 18px;
+  font-size: 17px;
 }
 
 .composer-textarea {
-  min-height: 110px;
-  padding: 16px;
+  min-height: 150px;
+  padding: 18px;
   resize: vertical;
-  font-size: 18px;
+  font-size: 19px;
+  line-height: 1.5;
 }
 
 .composer-title::placeholder,
 .composer-textarea::placeholder {
-  color: #8f93a0;
+  color: #a4a8b5;
+}
+
+.composer-title:focus,
+.composer-textarea:focus {
+  border-color: #565b66;
 }
 
 .composer-footer {
-  margin-top: 22px;
+  margin-top: 24px;
+  padding-left: 80px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -447,15 +471,16 @@ body {
 
 .composer-tools {
   display: flex;
-  gap: 28px;
+  gap: 34px;
 }
 
 .composer-tools button {
   background: transparent;
   border: none;
-  color: #b9bdc9;
-  font-size: 17px;
+  color: #c2c6d2;
+  font-size: 18px;
   cursor: pointer;
+  padding: 0;
 }
 
 .composer-tools button:hover {
@@ -463,7 +488,7 @@ body {
 }
 
 .post-submit-button {
-  padding: 12px 24px;
+  padding: 13px 28px;
   border-radius: 10px;
   background: #ffffff;
   color: #000000;
@@ -474,76 +499,178 @@ body {
 
 .post-submit-button:disabled {
   background: #191a1e;
-  color: #595d68;
+  color: #666b76;
   cursor: not-allowed;
 }
 
 .feed-post-card {
-  overflow: hidden;
+  padding: 24px;
 }
 
 .feed-post-header {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 22px;
+  gap: 18px;
 }
 
-.feed-post-header h3 {
+.post-author-info {
+  text-align: left;
+}
+
+.post-author-info h3 {
   margin: 0;
-  font-size: 20px;
   color: #ffffff;
+  font-size: 22px;
 }
 
-.feed-post-header p {
-  margin: 4px 0;
-  color: #b9bdc9;
+.post-author-info p {
+  margin: 6px 0 4px;
+  color: #c2c6d2;
+  font-size: 17px;
+  line-height: 1.3;
+  text-align: left;
 }
 
-.feed-post-header span {
-  color: #8f93a0;
-  font-size: 14px;
+.post-author-info span {
+  color: #a4a8b5;
+  font-size: 15px;
 }
 
 .post-more-button {
   margin-left: auto;
   background: transparent;
   border: none;
-  color: #b9bdc9;
-  font-size: 22px;
+  color: #c2c6d2;
+  font-size: 24px;
   cursor: pointer;
 }
 
 .feed-post-content {
-  padding: 22px;
+  padding-top: 30px;
+  text-align: left;
 }
 
 .feed-post-content h2 {
   color: #ffffff;
   margin: 0 0 14px;
-  font-size: 22px;
+  font-size: 24px;
+  line-height: 1.3;
+  text-align: left;
 }
 
 .feed-post-content p {
   color: #ffffff;
-  line-height: 1.6;
+  line-height: 1.65;
   font-size: 20px;
   white-space: pre-wrap;
+  text-align: left;
+  margin: 0;
 }
 
 .empty-feed-card {
-  padding: 32px;
-  text-align: center;
+  padding: 36px;
+  text-align: left;
 }
 
 .empty-feed-card h2 {
   color: #ffffff;
   margin-bottom: 10px;
+  text-align: left;
 }
 
-/* =========================
-   Profile settings / history
-   ========================= */
+.empty-feed-card p {
+  color: #c2c6d2;
+  text-align: left;
+}
+
+/* Force feed text to not inherit centered auth/profile text */
+.feed-page h1,
+.feed-page h2,
+.feed-page h3,
+.feed-page p,
+.feed-page span,
+.feed-page input,
+.feed-page textarea,
+.feed-page button {
+  text-align: inherit;
+}
+
+@media (max-width: 800px) {
+  .prolink-topbar {
+    gap: 14px;
+    padding: 0 16px;
+  }
+
+  .prolink-logo {
+    font-size: 26px;
+  }
+
+  .prolink-search {
+    max-width: none;
+    width: 100%;
+  }
+
+  .prolink-nav,
+  .prolink-nav.simple-nav {
+    gap: 40px;
+  }
+
+  .feed-shell {
+    width: min(100% - 24px, 1110px);
+  }
+
+  .composer-main {
+    flex-direction: column;
+  }
+
+  .composer-footer {
+    padding-left: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 18px;
+  }
+
+  .composer-tools {
+    justify-content: space-between;
+    gap: 12px;
+  }
+}
+.profile-card .register-form label {
+  color: #f1f1f1;
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: -6px;
+}
+
+.profile-card .register-form input,
+.profile-card .register-form textarea,
+.profile-card .register-form select,
+.profile-textarea {
+  background-color: #15161a;
+  border: 1px solid #2b2d33;
+  color: #ffffff;
+  border-radius: 10px;
+  padding: 13px 14px;
+  font-size: 15px;
+}
+
+.profile-card .register-form input::placeholder,
+.profile-card .register-form textarea::placeholder {
+  color: #8f93a0;
+}
+
+.profile-card .register-form input:focus,
+.profile-card .register-form textarea:focus,
+.profile-card .register-form select:focus,
+.profile-textarea:focus {
+  border-color: #565b66;
+}
+
+.profile-card .register-form button,
+.profile-card .edit-button,
+.profile-card .cancel-button {
+  width: fit-content;
+}
 
 .profile-actions {
   display: flex;
@@ -592,98 +719,4 @@ body {
 
 .settings-menu-item:hover {
   background: #1c1d22;
-}
-
-.post-history-card h3 {
-  color: #ffffff;
-  font-size: 22px;
-  margin-bottom: 8px;
-}
-
-.post-history-header {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.post-history-date {
-  color: #999999;
-  font-size: 14px;
-  margin-bottom: 4px;
-}
-
-.post-history-text {
-  margin-top: 16px;
-  color: #dddddd;
-  line-height: 1.6;
-  white-space: pre-wrap;
-}
-
-.post-history-actions {
-  display: flex;
-  gap: 12px;
-  margin-top: 16px;
-}
-
-.danger-button {
-  margin-top: 10px;
-  padding: 12px 16px;
-  border: none;
-  border-radius: 10px;
-  background-color: #3a1010;
-  color: #ffb3b3;
-  font-weight: bold;
-  cursor: pointer;
-  transition: opacity 0.2s ease;
-}
-
-.danger-button:hover {
-  opacity: 0.85;
-}
-
-@media (max-width: 800px) {
-  .prolink-topbar {
-    gap: 14px;
-    padding: 0 14px;
-  }
-
-  .prolink-logo {
-    font-size: 26px;
-  }
-
-  .prolink-search {
-    max-width: none;
-    width: 100%;
-  }
-
-  .prolink-nav {
-    gap: 18px;
-    overflow-x: auto;
-    justify-content: flex-start;
-    padding-left: 16px;
-  }
-
-  .composer-main {
-    flex-direction: column;
-  }
-
-  .composer-footer {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 18px;
-  }
-
-  .composer-tools {
-    justify-content: space-between;
-    gap: 10px;
-  }
-
-  .profile-header {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .profile-actions {
-    width: 100%;
-  }
 }

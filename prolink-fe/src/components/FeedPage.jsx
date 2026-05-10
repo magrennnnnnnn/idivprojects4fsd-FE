@@ -10,70 +10,105 @@ function FeedPage() {
     const [postTitle, setPostTitle] = useState("");
     const [postText, setPostText] = useState("");
 
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [posting, setPosting] = useState(false);
     const [error, setError] = useState("");
     const [message, setMessage] = useState("");
 
     useEffect(() => {
-        void fetchInitialData();
+        void loadFeedPage();
     }, []);
 
-    const fetchInitialData = async () => {
+    const loadFeedPage = async () => {
+        setLoading(true);
+        setError("");
+
         try {
-            setLoading(true);
-            setError("");
-
-            const profileResponse = await fetch("http://localhost:8080/profiles/me", {
-                method: "GET",
-                credentials: "include"
-            });
-
-            if (profileResponse.status === 401) {
-                navigate("/login");
-                return;
-            }
-
-            if (profileResponse.status === 404) {
-                navigate("/profile/create");
-                return;
-            }
-
-            if (!profileResponse.ok) {
-                throw new Error("Could not load your profile");
-            }
-
-            const profileData = await profileResponse.json();
-            setProfile(profileData);
-
-            await fetchPosts();
+            const loadedProfile = await loadMyProfile();
+            await loadPosts(loadedProfile);
         } catch (err) {
-            setError(err.message);
+            setError(err.message || "Something went wrong");
         } finally {
             setLoading(false);
         }
     };
 
-    const fetchPosts = async () => {
-        const postsResponse = await fetch("http://localhost:8080/posts", {
+    const loadMyProfile = async () => {
+        const response = await fetch("http://localhost:8080/profiles/me", {
             method: "GET",
             credentials: "include"
         });
 
-        if (!postsResponse.ok) {
+        if (response.status === 401) {
+            navigate("/login");
+            return null;
+        }
+
+        if (response.status === 404) {
+            navigate("/profile/create");
+            return null;
+        }
+
+        if (!response.ok) {
+            throw new Error("Could not load your profile");
+        }
+
+        const data = await response.json();
+        setProfile(data);
+        return data;
+    };
+
+    const loadPosts = async (loadedProfile) => {
+        const response = await fetch("http://localhost:8080/posts", {
+            method: "GET",
+            credentials: "include"
+        });
+
+        if (!response.ok) {
             setPosts([]);
             return;
         }
 
-        const postsData = await postsResponse.json();
-        setPosts(postsData);
+        const data = await response.json();
+
+        const normalizedPosts = data.map((post) => ({
+            ...post,
+            authorName: getAuthorName(post, loadedProfile),
+            authorLocation: getAuthorLocation(post, loadedProfile)
+        }));
+
+        setPosts(normalizedPosts);
+    };
+
+    const getAuthorName = (post, loadedProfile) => {
+        if (post.profileName) {
+            return post.profileName;
+        }
+
+        if (loadedProfile && post.idProfile === loadedProfile.idProfile) {
+            return loadedProfile.name;
+        }
+
+        return "ProLink User";
+    };
+
+    const getAuthorLocation = (post, loadedProfile) => {
+        if (post.profileLocation) {
+            return post.profileLocation;
+        }
+
+        if (loadedProfile && post.idProfile === loadedProfile.idProfile) {
+            return loadedProfile.location;
+        }
+
+        return "ProLink member";
     };
 
     const handleCreatePost = async (e) => {
         e.preventDefault();
 
-        setMessage("");
         setError("");
+        setMessage("");
 
         if (!postTitle.trim()) {
             setError("Post title is required");
@@ -95,22 +130,33 @@ function FeedPage() {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    postTitle,
-                    postText
+                    postTitle: postTitle.trim(),
+                    postText: postText.trim()
                 })
             });
 
+            if (response.status === 401) {
+                navigate("/login");
+                return;
+            }
+
+            if (response.status === 404) {
+                navigate("/profile/create");
+                return;
+            }
+
             if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(errorText || "Could not create post");
+                const text = await response.text();
+                throw new Error(text || "Could not create post");
             }
 
             setPostTitle("");
             setPostText("");
-            setMessage("Post created successfully!");
-            await fetchPosts();
+            setMessage("Post created successfully");
+
+            await loadPosts(profile);
         } catch (err) {
-            setError(err.message);
+            setError(err.message || "Could not create post");
         } finally {
             setPosting(false);
         }
@@ -124,20 +170,20 @@ function FeedPage() {
         return new Date(value).toLocaleString();
     };
 
-    if (loading) {
-        return (
-            <div className="feed-page">
-                <div className="feed-shell">
-                    <p className="subtitle">Loading feed...</p>
-                </div>
-            </div>
-        );
-    }
+    const getInitial = (name) => {
+        if (!name || name.trim().length === 0) {
+            return "U";
+        }
+
+        return name.trim().charAt(0).toUpperCase();
+    };
 
     return (
         <div className="feed-page">
             <header className="prolink-topbar">
-                <Link to="/feed" className="prolink-logo">ProLink</Link>
+                <Link to="/feed" className="prolink-logo">
+                    ProLink
+                </Link>
 
                 <div className="prolink-search">
                     <span>⌕</span>
@@ -146,32 +192,18 @@ function FeedPage() {
 
                 <div className="topbar-actions">
                     <span className="notification-dot">●</span>
-                    <div className="small-avatar">
-                        {profile?.name ? profile.name.charAt(0).toUpperCase() : "U"}
-                    </div>
+
+                    <Link to="/profile" className="small-avatar avatar-link">
+                        {getInitial(profile?.name)}
+                    </Link>
                 </div>
             </header>
 
-            <nav className="prolink-nav">
+            <nav className="prolink-nav simple-nav">
                 <Link to="/feed" className="nav-item active">
                     <span>⌂</span>
                     Feed
                 </Link>
-
-                <span className="nav-item">
-                    <span>♙</span>
-                    Network
-                </span>
-
-                <span className="nav-item">
-                    <span>▣</span>
-                    Jobs
-                </span>
-
-                <span className="nav-item">
-                    <span>☏</span>
-                    Messages
-                </span>
 
                 <Link to="/profile" className="nav-item">
                     <span>♙</span>
@@ -180,18 +212,22 @@ function FeedPage() {
             </nav>
 
             <main className="feed-shell">
+                {loading && <p className="feed-status-message">Loading feed...</p>}
+                {error && <p className="error-message">{error}</p>}
+                {message && <p className="success-message">{message}</p>}
+
                 <section className="post-composer-card">
                     <form onSubmit={handleCreatePost}>
                         <div className="composer-main">
-                            <div className="composer-avatar">
-                                {profile?.name ? profile.name.charAt(0).toUpperCase() : "U"}
-                            </div>
+                            <Link to="/profile" className="composer-avatar avatar-link">
+                                {getInitial(profile?.name)}
+                            </Link>
 
                             <div className="composer-inputs">
                                 <input
                                     className="composer-title"
                                     type="text"
-                                    placeholder="Post title"
+                                    placeholder="Give your post a title"
                                     value={postTitle}
                                     onChange={(e) => setPostTitle(e.target.value)}
                                     maxLength={200}
@@ -209,9 +245,9 @@ function FeedPage() {
 
                         <div className="composer-footer">
                             <div className="composer-tools">
-                                <button type="button">▧ Photo</button>
-                                <button type="button">▣ Video</button>
-                                <button type="button">▤ File</button>
+                                <button type="button">Photo</button>
+                                <button type="button">Video</button>
+                                <button type="button">File</button>
                             </div>
 
                             <button
@@ -225,30 +261,29 @@ function FeedPage() {
                     </form>
                 </section>
 
-                {message && <p className="success-message">{message}</p>}
-                {error && <p className="error-message">{error}</p>}
-
                 <section className="feed-posts">
                     {posts.length === 0 ? (
                         <div className="empty-feed-card">
                             <h2>No posts yet</h2>
-                            <p>Be the first person to post on ProLink.</p>
+                            <p>Create the first post on ProLink.</p>
                         </div>
                     ) : (
                         posts.map((post) => (
                             <article key={post.idPost} className="feed-post-card">
                                 <div className="feed-post-header">
                                     <div className="post-author-avatar">
-                                        P
+                                        {getInitial(post.authorName)}
                                     </div>
 
-                                    <div>
-                                        <h3>ProLink User</h3>
-                                        <p>Profile #{post.idProfile}</p>
+                                    <div className="post-author-info">
+                                        <h3>{post.authorName}</h3>
+                                        <p>{post.authorLocation}</p>
                                         <span>{formatDate(post.createdAt)}</span>
                                     </div>
 
-                                    <button className="post-more-button">•••</button>
+                                    <button className="post-more-button" type="button">
+                                        •••
+                                    </button>
                                 </div>
 
                                 <div className="feed-post-content">
