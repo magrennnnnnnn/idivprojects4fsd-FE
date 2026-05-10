@@ -1,4 +1,4 @@
-{
+* {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -719,4 +719,218 @@ body {
 
 .settings-menu-item:hover {
   background: #1c1d22;
+}
+.feed-page {
+  width: 100%;
+  min-height: 100vh;
+  background: #000000;
+  color: #ffffff;
+  text-align: left;
+}
+
+.feed-page * {
+  box-sizing: border-box;
+}
+
+.prolink-topbar {
+  height: 68px;
+  padding: 0 48px;
+  border-bottom: 1px solid #181818;
+}
+
+.prolink-logo {
+  min-width: 160px;
+  font-size: 34px;
+  line-height: 1;
+}
+
+.prolink-search {
+  width: min(680px, 52vw);
+  height: 48px;
+  margin-left: 8px;
+}
+
+.prolink-search input {
+  text-align: left !important;
+  padding: 0;
+}
+
+.prolink-nav {
+  height: 92px;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.prolink-nav.simple-nav {
+  gap: 140px;
+}
+
+.nav-item {
+  padding-bottom: 18px;
+}
+
+.feed-shell {
+  width: min(1080px, calc(100% - 96px));
+  margin: 18px auto 72px;
+}
+
+.post-composer-card {
+  padding: 24px;
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.composer-main {
+  display: grid;
+  grid-template-columns: 58px 1fr;
+  gap: 22px;
+  align-items: start;
+}
+
+.composer-avatar {
+  flex-shrink: 0;
+}
+
+.composer-inputs {
+  min-width: 0;
+  width: 100%;
+}
+
+.composer-title,
+.composer-textarea {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  text-align: left !important;
+  background: #18191d;
+  border: 1px solid #2b2d33;
+  color: #ffffff;
+}
+
+.composer-title {
+  height: 50px;
+  padding: 0 16px;
+  font-size: 16px;
+}
+
+.composer-textarea {
+  min-height: 140px;
+  padding: 16px;
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+.composer-title::placeholder,
+.composer-textarea::placeholder {
+  color: #a4a8b5;
+  text-align: left;
+}
+
+.composer-footer {
+  margin-top: 20px;
+}
+
+.composer-footer-clean {
+  display: flex;
+  justify-content: flex-end;
+  padding-left: 80px;
+}
+
+.composer-tools {
+  display: none;
+}
+
+.post-submit-button {
+  min-width: 92px;
+  height: 44px;
+  padding: 0 24px;
+}
+
+.feed-post-card {
+  padding: 24px;
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.feed-post-header {
+  align-items: flex-start;
+}
+
+.post-author-info h3,
+.post-author-info p,
+.post-author-info span {
+  text-align: left !important;
+}
+
+.feed-post-content {
+  padding-top: 28px;
+  padding-left: 28px;
+  padding-right: 28px;
+  text-align: left !important;
+}
+
+.feed-post-content h2 {
+  text-align: left !important;
+  font-size: 22px;
+  margin-bottom: 14px;
+}
+
+.feed-post-content p {
+  text-align: left !important;
+  font-size: 19px;
+  line-height: 1.55;
+}
+
+.empty-feed-card,
+.empty-feed-card h2,
+.empty-feed-card p {
+  text-align: left !important;
+}
+
+/* Remove old forced inherited alignment because it caused weird centering */
+.feed-page input,
+.feed-page textarea,
+.feed-page button,
+.feed-page h1,
+.feed-page h2,
+.feed-page h3,
+.feed-page p,
+.feed-page span {
+  text-align: left;
+}
+
+.post-submit-button {
+  text-align: center !important;
+}
+
+@media (max-width: 800px) {
+  .prolink-topbar {
+    padding: 0 16px;
+  }
+
+  .prolink-logo {
+    min-width: auto;
+    font-size: 26px;
+  }
+
+  .prolink-search {
+    width: 100%;
+    max-width: none;
+  }
+
+  .prolink-nav.simple-nav {
+    gap: 56px;
+  }
+
+  .feed-shell {
+    width: calc(100% - 24px);
+  }
+
+  .composer-main {
+    grid-template-columns: 1fr;
+  }
+
+  .composer-footer-clean {
+    padding-left: 0;
+  }
 }

@@ -243,13 +243,7 @@ function FeedPage() {
                             </div>
                         </div>
 
-                        <div className="composer-footer">
-                            <div className="composer-tools">
-                                <button type="button">Photo</button>
-                                <button type="button">Video</button>
-                                <button type="button">File</button>
-                            </div>
-
+                        <div className="composer-footer composer-footer-clean">
                             <button
                                 type="submit"
                                 className="post-submit-button"
