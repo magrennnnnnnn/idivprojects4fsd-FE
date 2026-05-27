@@ -177,16 +177,28 @@ function NetworkPage() {
         }
     };
 
-    const getOtherProfileId = (connection) => {
+    const getOtherProfileName = (connection) => {
         if (!profile) {
             return "";
         }
 
         if (connection.requesterProfileId === profile.idProfile) {
-            return connection.receiverProfileId;
+            return connection.receiverProfileName;
         }
 
-        return connection.requesterProfileId;
+        return connection.requesterProfileName;
+    };
+
+    const getOtherProfileLocation = (connection) => {
+        if (!profile) {
+            return "";
+        }
+
+        if (connection.requesterProfileId === profile.idProfile) {
+            return connection.receiverProfileLocation;
+        }
+
+        return connection.requesterProfileLocation;
     };
 
     const getInitial = (name) => {
@@ -253,7 +265,8 @@ function NetworkPage() {
                             ) : (
                                 receivedRequests.map((request) => (
                                     <div key={request.idConnection} className="entry-card">
-                                        <h3>Profile #{request.requesterProfileId}</h3>
+                                        <h3>{request.requesterProfileName}</h3>
+                                        <p>{request.requesterProfileLocation}</p>
                                         <p>wants to connect with you.</p>
 
                                         <button
@@ -286,7 +299,8 @@ function NetworkPage() {
                             ) : (
                                 sentRequests.map((request) => (
                                     <div key={request.idConnection} className="entry-card">
-                                        <h3>Profile #{request.receiverProfileId}</h3>
+                                        <h3>{request.receiverProfileName}</h3>
+                                        <p>{request.receiverProfileLocation}</p>
                                         <p>Your connection request is still pending.</p>
                                     </div>
                                 ))
@@ -303,7 +317,8 @@ function NetworkPage() {
                             ) : (
                                 connections.map((connection) => (
                                     <div key={connection.idConnection} className="entry-card">
-                                        <h3>Profile #{getOtherProfileId(connection)}</h3>
+                                        <h3>{getOtherProfileName(connection)}</h3>
+                                        <p>{getOtherProfileLocation(connection)}</p>
                                         <p>You are connected.</p>
                                     </div>
                                 ))
