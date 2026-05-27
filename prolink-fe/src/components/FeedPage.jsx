@@ -14,6 +14,9 @@ function FeedPage() {
     const [posting, setPosting] = useState(false);
     const [error, setError] = useState("");
     const [message, setMessage] = useState("");
+    const [connections, setConnections] = useState([]);
+    const [sentRequests, setSentRequests] = useState([]);
+    const [receivedRequests, setReceivedRequests] = useState([]);
 
     useEffect(() => {
         void loadFeedPage();
@@ -25,11 +28,52 @@ function FeedPage() {
 
         try {
             const loadedProfile = await loadMyProfile();
-            await loadPosts(loadedProfile);
+
+            if (!loadedProfile) {
+                return;
+            }
+
+            await Promise.all([
+                loadPosts(loadedProfile),
+                loadNetworkState()
+            ]);
         } catch (err) {
             setError(err.message || "Something went wrong");
         } finally {
             setLoading(false);
+        }
+    };
+
+    const loadNetworkState = async () => {
+        try {
+            const [connectionsResponse, sentResponse, receivedResponse] = await Promise.all([
+                fetch("http://localhost:8080/connections/me", {
+                    method: "GET",
+                    credentials: "include"
+                }),
+                fetch("http://localhost:8080/connections/sent", {
+                    method: "GET",
+                    credentials: "include"
+                }),
+                fetch("http://localhost:8080/connections/received", {
+                    method: "GET",
+                    credentials: "include"
+                })
+            ]);
+
+            if (connectionsResponse.ok) {
+                setConnections(await connectionsResponse.json());
+            }
+
+            if (sentResponse.ok) {
+                setSentRequests(await sentResponse.json());
+            }
+
+            if (receivedResponse.ok) {
+                setReceivedRequests(await receivedResponse.json());
+            }
+        } catch (err) {
+            console.error("Could not load network state", err);
         }
     };
 
@@ -81,6 +125,10 @@ function FeedPage() {
     };
 
     const getAuthorName = (post, loadedProfile) => {
+        if (post.authorName) {
+            return post.authorName;
+        }
+
         if (post.profileName) {
             return post.profileName;
         }
@@ -93,6 +141,10 @@ function FeedPage() {
     };
 
     const getAuthorLocation = (post, loadedProfile) => {
+        if (post.authorLocation) {
+            return post.authorLocation;
+        }
+
         if (post.profileLocation) {
             return post.profileLocation;
         }
@@ -210,9 +262,53 @@ function FeedPage() {
             }
 
             setMessage("Connection request sent");
+            await loadNetworkState();
         } catch (err) {
             setError(err.message || "Could not send connection request");
         }
+    };
+
+    const isAlreadyConnected = (profileId) => {
+        return connections.some((connection) =>
+            connection.requesterProfileId === profileId ||
+            connection.receiverProfileId === profileId
+        );
+    };
+
+    const hasSentPendingRequest = (profileId) => {
+        return sentRequests.some((request) =>
+            request.receiverProfileId === profileId
+        );
+    };
+
+    const hasReceivedPendingRequest = (profileId) => {
+        return receivedRequests.some((request) =>
+            request.requesterProfileId === profileId
+        );
+    };
+
+    const shouldShowConnectButton = (postProfileId) => {
+        if (!profile || !postProfileId) {
+            return false;
+        }
+
+        if (postProfileId === profile.idProfile) {
+            return false;
+        }
+
+        if (isAlreadyConnected(postProfileId)) {
+            return false;
+        }
+
+        if (hasSentPendingRequest(postProfileId)) {
+            return false;
+        }
+
+        if (hasReceivedPendingRequest(postProfileId)) {
+            return false;
+        }
+
+        return true;
     };
 
     return (
@@ -327,7 +423,7 @@ function FeedPage() {
                                     <p>{post.postText}</p>
                                 </div>
 
-                                {profile && post.idProfile !== profile.idProfile && (
+                                {shouldShowConnectButton(post.idProfile) && (
                                     <button
                                         type="button"
                                         className="post-submit-button"
