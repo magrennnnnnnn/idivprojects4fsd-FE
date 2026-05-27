@@ -5,6 +5,7 @@ import CreateProfileForm from "./components/CreateProfileForm.jsx";
 import ProfilePage from "./components/ProfilePage.jsx";
 import FeedPage from "./components/FeedPage.jsx";
 import PostHistoryPage from "./components/PostHistoryPage.jsx";
+import NetworkPage from "./components/NetworkPage.jsx";
 import "./App.css";
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
               <Route path="/profile/create" element={<CreateProfileForm />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/profile/posts" element={<PostHistoryPage />} />
+              <Route path="/network" element={<NetworkPage />} />
           </Routes>
       </BrowserRouter>
   );

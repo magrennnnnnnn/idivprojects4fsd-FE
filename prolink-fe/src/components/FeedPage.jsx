@@ -178,6 +178,43 @@ function FeedPage() {
         return name.trim().charAt(0).toUpperCase();
     };
 
+    const sendConnectionRequest = async (receiverProfileId) => {
+        setError("");
+        setMessage("");
+
+        if (!receiverProfileId) {
+            setError("Profile id was not found");
+            return;
+        }
+
+        try {
+            const response = await fetch("http://localhost:8080/connections", {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    receiverProfileId: receiverProfileId
+                })
+            });
+
+            if (response.status === 401) {
+                navigate("/login");
+                return;
+            }
+
+            if (!response.ok) {
+                const text = await response.text();
+                throw new Error(text || "Could not send connection request");
+            }
+
+            setMessage("Connection request sent");
+        } catch (err) {
+            setError(err.message || "Could not send connection request");
+        }
+    };
+
     return (
         <div className="feed-page">
             <header className="prolink-topbar">
@@ -203,6 +240,11 @@ function FeedPage() {
                 <Link to="/feed" className="nav-item active">
                     <span>⌂</span>
                     Feed
+                </Link>
+
+                <Link to="/network" className="nav-item">
+                    <span>☍</span>
+                    Network
                 </Link>
 
                 <Link to="/profile" className="nav-item">
@@ -284,6 +326,16 @@ function FeedPage() {
                                     <h2>{post.postTitle}</h2>
                                     <p>{post.postText}</p>
                                 </div>
+
+                                {profile && post.idProfile !== profile.idProfile && (
+                                    <button
+                                        type="button"
+                                        className="post-submit-button"
+                                        onClick={() => sendConnectionRequest(post.idProfile)}
+                                    >
+                                        Connect
+                                    </button>
+                                )}
                             </article>
                         ))
                     )}
