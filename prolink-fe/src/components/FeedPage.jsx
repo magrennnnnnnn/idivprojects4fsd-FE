@@ -343,6 +343,11 @@ function FeedPage() {
                     Network
                 </Link>
 
+                <Link to="/messages" className="nav-item">
+                    <span>✉</span>
+                    Messages
+                </Link>
+
                 <Link to="/profile" className="nav-item">
                     <span>♙</span>
                     Profile

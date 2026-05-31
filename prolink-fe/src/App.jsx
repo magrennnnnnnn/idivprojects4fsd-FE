@@ -7,6 +7,7 @@ import FeedPage from "./components/FeedPage.jsx";
 import PostHistoryPage from "./components/PostHistoryPage.jsx";
 import NetworkPage from "./components/NetworkPage.jsx";
 import ChatPage from "./components/ChatPage.jsx";
+import MessagesPage from "./components/MessagesPage.jsx";
 import "./App.css";
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
               <Route path="/profile/posts" element={<PostHistoryPage />} />
               <Route path="/network" element={<NetworkPage />} />
               <Route path="/chat/:profileId" element={<ChatPage />} />
+              <Route path="/messages" element={<MessagesPage />} />
           </Routes>
       </BrowserRouter>
   );
