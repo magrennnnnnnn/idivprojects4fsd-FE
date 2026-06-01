@@ -85,7 +85,19 @@ function ChatPage() {
             return;
         }
 
-        setMessages((currentMessages) => [...currentMessages, newMessage]);
+        setMessages((currentMessages) => {
+            const alreadyExists = currentMessages.some((message) =>
+                message.idMessage &&
+                newMessage.idMessage &&
+                message.idMessage === newMessage.idMessage
+            );
+
+            if (alreadyExists) {
+                return currentMessages;
+            }
+
+            return [...currentMessages, newMessage];
+        });
     };
 
     const handleSocketError = (message) => {
@@ -174,7 +186,6 @@ function ChatPage() {
 
                 <section className="post-composer-card">
                     <h1>Chat with {getOtherProfileName()}</h1>
-                    <p>Only accepted connections can send messages.</p>
                 </section>
 
                 <section className="feed-post-card chat-card">

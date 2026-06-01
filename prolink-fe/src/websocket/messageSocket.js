@@ -2,10 +2,21 @@ import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 
 let stompClient = null;
+let messageSubscription = null;
 
 export const connectMessageSocket = (profileId, onMessageReceived, onError) => {
     if (!profileId) {
         return;
+    }
+
+    if (stompClient && stompClient.connected) {
+        return;
+    }
+
+    if (stompClient) {
+        stompClient.deactivate();
+        stompClient = null;
+        messageSubscription = null;
     }
 
     stompClient = new Client({
@@ -13,14 +24,22 @@ export const connectMessageSocket = (profileId, onMessageReceived, onError) => {
         reconnectDelay: 5000,
 
         onConnect: () => {
-            stompClient.subscribe(`/topic/profile/${profileId}/messages`, (message) => {
-                const body = JSON.parse(message.body);
-                onMessageReceived(body);
-            });
+            if (messageSubscription) {
+                messageSubscription.unsubscribe();
+            }
+
+            messageSubscription = stompClient.subscribe(
+                `/topic/profile/${profileId}/messages`,
+                (message) => {
+                    const body = JSON.parse(message.body);
+                    onMessageReceived(body);
+                }
+            );
         },
 
         onStompError: (frame) => {
             console.error("WebSocket STOMP error:", frame);
+
             if (onError) {
                 onError("WebSocket error");
             }
@@ -28,6 +47,7 @@ export const connectMessageSocket = (profileId, onMessageReceived, onError) => {
 
         onWebSocketError: (event) => {
             console.error("WebSocket connection error:", event);
+
             if (onError) {
                 onError("Could not connect to chat");
             }
@@ -52,6 +72,11 @@ export const sendSocketMessage = (receiverProfileId, messageText) => {
 };
 
 export const disconnectMessageSocket = () => {
+    if (messageSubscription) {
+        messageSubscription.unsubscribe();
+        messageSubscription = null;
+    }
+
     if (stompClient) {
         stompClient.deactivate();
         stompClient = null;
