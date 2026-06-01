@@ -39,6 +39,8 @@ function ChatPage() {
                 return;
             }
 
+            await loadMessageHistory();
+
             connectMessageSocket(
                 profile.idProfile,
                 handleMessageReceived,
@@ -49,6 +51,29 @@ function ChatPage() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const loadMessageHistory = async () => {
+        const response = await fetch(`http://localhost:8080/messages/${receiverProfileId}`, {
+            method: "GET",
+            credentials: "include"
+        });
+
+        if (response.status === 401) {
+            navigate("/login");
+            return;
+        }
+
+        if (response.status === 403) {
+            throw new Error("You can only view messages with your connections");
+        }
+
+        if (!response.ok) {
+            throw new Error("Could not load message history");
+        }
+
+        const data = await response.json();
+        setMessages(data);
     };
 
     const loadMyProfile = async () => {
