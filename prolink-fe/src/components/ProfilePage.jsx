@@ -521,13 +521,7 @@ function ProfilePage() {
                             </div>
                         </div>
 
-                        <button
-                            type="button"
-                            className="edit-button"
-                            onClick={requestProfileImprovementEmail}
-                        >
-                            Request profile improvement email
-                        </button>
+
 
                         <p className="profile-location">{profile.location}</p>
 
