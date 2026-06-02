@@ -139,6 +139,32 @@ function ProfilePage() {
         }
     };
 
+    const requestProfileImprovementEmail = async () => {
+        setError("");
+        setMessage("");
+
+        try {
+            const response = await fetch("http://localhost:8080/profiles/me/improvement-email", {
+                method: "POST",
+                credentials: "include"
+            });
+
+            if (response.status === 401) {
+                navigate("/login");
+                return;
+            }
+
+            if (!response.ok) {
+                const text = await response.text();
+                throw new Error(text || "Could not request profile improvement email");
+            }
+
+            setMessage("Profile improvement email requested successfully");
+        } catch (err) {
+            setError(err.message || "Could not request profile improvement email");
+        }
+    };
+
     const handleProfileUpdate = async (e) => {
         e.preventDefault();
         setMessage("");
@@ -494,6 +520,14 @@ function ProfilePage() {
                                 </button>
                             </div>
                         </div>
+
+                        <button
+                            type="button"
+                            className="edit-button"
+                            onClick={requestProfileImprovementEmail}
+                        >
+                            Request profile improvement email
+                        </button>
 
                         <p className="profile-location">{profile.location}</p>
 
