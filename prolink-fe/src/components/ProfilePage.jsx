@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function ProfilePage() {
+    const navigate = useNavigate();
     const [profile, setProfile] = useState(null);
     const [workList, setWorkList] = useState([]);
     const [educationList, setEducationList] = useState([]);
@@ -476,10 +477,43 @@ function ProfilePage() {
         }
     };
 
+    const formatEnumValue = (value) => {
+        if (!value) return "";
+
+        return value
+            .replaceAll("_", " ")
+            .toLowerCase()
+            .replace(/\b\w/g, (letter) => letter.toUpperCase());
+    };
+
+    const formatDate = (value) => {
+        if (!value) return "";
+
+        const date = new Date(value);
+
+        if (Number.isNaN(date.getTime())) {
+            return value;
+        }
+
+        return date.toLocaleDateString("en-GB", {
+            month: "short",
+            year: "numeric"
+        });
+    };
+
+    const splitSkills = (value) => {
+        if (!value) return [];
+
+        return value
+            .split(/[;,\n]/)
+            .map((skill) => skill.trim())
+            .filter(Boolean);
+    };
+
     if (!profile) {
         return (
-            <div className="register-page">
-                <div className="register-card">
+            <div className="profile-page profile-modern-root">
+                <div className="profile-card profile-modern-container">
                     <p className="subtitle">Loading profile...</p>
                     {error && <p className="error-message">{error}</p>}
                 </div>
@@ -488,62 +522,87 @@ function ProfilePage() {
     }
 
     return (
-        <div className="profile-page">
-            <div className="profile-card">
+        <div className="profile-page profile-modern-root">
+            <div className="profile-card profile-modern-container">
                 {!editMode ? (
                     <>
-                        <div className="profile-header">
-                            <div>
-                                <h1 className="profile-name">{profile.name}</h1>
-                                <p className="profile-location">{profile.location}</p>
-                            </div>
+                        <header className="profile-modern-header">
+                            <div className="profile-modern-header-top">
+                                <div className="profile-modern-name-block">
+                                    <h1 className="profile-modern-name">{profile.name}</h1>
 
-                            <div className="profile-actions">
-                                <Link to="/feed" className="edit-button link-button">
-                                    Feed
-                                </Link>
-
-                                <div className="settings-dropdown">
-                                    <button className="edit-button" type="button">
-                                        Settings
-                                    </button>
-
-                                    <div className="settings-menu">
-                                        <Link to="/profile/posts" className="settings-menu-item">
-                                            Posts History
-                                        </Link>
+                                    <div className="profile-modern-location-badge">
+                                        <span className="profile-modern-dot" />
+                                        {profile.location}
                                     </div>
                                 </div>
 
-                                <button className="edit-button" onClick={() => setEditMode(true)}>
-                                    Edit Profile
-                                </button>
+                                <div className="profile-modern-actions">
+                                    <Link to="/feed" className="profile-modern-button">
+                                        Feed
+                                    </Link>
+
+                                    <div className="settings-dropdown">
+                                        <button className="profile-modern-button" type="button">
+                                            Settings
+                                        </button>
+
+                                        <div className="settings-menu">
+                                            <Link to="/profile/posts" className="settings-menu-item">
+                                                Posts History
+                                            </Link>
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        className="profile-modern-button profile-modern-button-primary"
+                                        onClick={() => setEditMode(true)}
+                                    >
+                                        Edit Profile
+                                    </button>
+                                </div>
                             </div>
-                        </div>
 
+                            <p className="profile-modern-about-text">
+                                {profile.personalDetails}
+                            </p>
 
+                            <button
+                                className="profile-modern-email-button"
+                                type="button"
+                                onClick={requestProfileImprovementEmail}
+                            >
+                                Request profile improvement email
+                            </button>
+                        </header>
 
-                        <p className="profile-location">{profile.location}</p>
+                        <section className="profile-modern-section">
+                            <div className="profile-modern-section-label">Work Experience</div>
 
-                        <div className="profile-section">
-                            <h2>About</h2>
-                            <p>{profile.personalDetails}</p>
-                        </div>
-
-                        <div className="profile-section">
-                            <h2>Work Experience</h2>
                             {workList.length === 0 ? (
-                                <p>No work experience added yet.</p>
+                                <p className="profile-modern-empty-text">
+                                    No work experience added yet.
+                                </p>
                             ) : (
                                 workList.map((work) => (
-                                    <div key={work.idProfileWork} className="entry-card">
+                                    <div
+                                        key={work.idProfileWork}
+                                        className="profile-modern-entry-card profile-modern-work-card"
+                                    >
+                                        <span className="profile-modern-card-accent" />
+
                                         {editingWorkId === work.idProfileWork ? (
                                             <form onSubmit={handleUpdateWork} className="register-form">
                                                 <label>Institution / Company</label>
                                                 <input
                                                     type="text"
                                                     value={editingWorkData.workInstitutionName}
-                                                    onChange={(e) => setEditingWorkData({ ...editingWorkData, workInstitutionName: e.target.value })}
+                                                    onChange={(e) =>
+                                                        setEditingWorkData({
+                                                            ...editingWorkData,
+                                                            workInstitutionName: e.target.value
+                                                        })
+                                                    }
                                                     required
                                                 />
 
@@ -551,7 +610,12 @@ function ProfilePage() {
                                                 <input
                                                     type="date"
                                                     value={editingWorkData.startDateWork}
-                                                    onChange={(e) => setEditingWorkData({ ...editingWorkData, startDateWork: e.target.value })}
+                                                    onChange={(e) =>
+                                                        setEditingWorkData({
+                                                            ...editingWorkData,
+                                                            startDateWork: e.target.value
+                                                        })
+                                                    }
                                                     required
                                                 />
 
@@ -559,7 +623,12 @@ function ProfilePage() {
                                                     <input
                                                         type="checkbox"
                                                         checked={editingWorkData.onGoingWork}
-                                                        onChange={(e) => setEditingWorkData({ ...editingWorkData, onGoingWork: e.target.checked })}
+                                                        onChange={(e) =>
+                                                            setEditingWorkData({
+                                                                ...editingWorkData,
+                                                                onGoingWork: e.target.checked
+                                                            })
+                                                        }
                                                     />
                                                     Ongoing
                                                 </label>
@@ -570,7 +639,12 @@ function ProfilePage() {
                                                         <input
                                                             type="date"
                                                             value={editingWorkData.endDateWork}
-                                                            onChange={(e) => setEditingWorkData({ ...editingWorkData, endDateWork: e.target.value })}
+                                                            onChange={(e) =>
+                                                                setEditingWorkData({
+                                                                    ...editingWorkData,
+                                                                    endDateWork: e.target.value
+                                                                })
+                                                            }
                                                         />
                                                     </>
                                                 )}
@@ -579,14 +653,24 @@ function ProfilePage() {
                                                 <textarea
                                                     className="profile-textarea"
                                                     value={editingWorkData.workSkills}
-                                                    onChange={(e) => setEditingWorkData({ ...editingWorkData, workSkills: e.target.value })}
+                                                    onChange={(e) =>
+                                                        setEditingWorkData({
+                                                            ...editingWorkData,
+                                                            workSkills: e.target.value
+                                                        })
+                                                    }
                                                     required
                                                 />
 
                                                 <label>Work Type</label>
                                                 <select
                                                     value={editingWorkData.work}
-                                                    onChange={(e) => setEditingWorkData({ ...editingWorkData, work: e.target.value })}
+                                                    onChange={(e) =>
+                                                        setEditingWorkData({
+                                                            ...editingWorkData,
+                                                            work: e.target.value
+                                                        })
+                                                    }
                                                 >
                                                     <option value="Artificial_Intelligence">Artificial Intelligence</option>
                                                     <option value="Software_Development">Software Development</option>
@@ -598,7 +682,12 @@ function ProfilePage() {
                                                 <label>Work Location</label>
                                                 <select
                                                     value={editingWorkData.workLocation}
-                                                    onChange={(e) => setEditingWorkData({ ...editingWorkData, workLocation: e.target.value })}
+                                                    onChange={(e) =>
+                                                        setEditingWorkData({
+                                                            ...editingWorkData,
+                                                            workLocation: e.target.value
+                                                        })
+                                                    }
                                                 >
                                                     <option value="On_site">On site</option>
                                                     <option value="Remote">Remote</option>
@@ -608,7 +697,12 @@ function ProfilePage() {
                                                 <label>Schedule</label>
                                                 <select
                                                     value={editingWorkData.workScheduleType}
-                                                    onChange={(e) => setEditingWorkData({ ...editingWorkData, workScheduleType: e.target.value })}
+                                                    onChange={(e) =>
+                                                        setEditingWorkData({
+                                                            ...editingWorkData,
+                                                            workScheduleType: e.target.value
+                                                        })
+                                                    }
                                                 >
                                                     <option value="Full_Time">Full Time</option>
                                                     <option value="Part_Time">Part Time</option>
@@ -616,41 +710,93 @@ function ProfilePage() {
                                                 </select>
 
                                                 <button type="submit">Save Work</button>
-                                                <button type="button" className="cancel-button" onClick={() => setEditingWorkId(null)}>
+                                                <button
+                                                    type="button"
+                                                    className="cancel-button"
+                                                    onClick={() => setEditingWorkId(null)}
+                                                >
                                                     Cancel
                                                 </button>
                                             </form>
                                         ) : (
                                             <>
-                                                <h3>{work.workInstitutionName}</h3>
-                                                <p>{work.work}</p>
-                                                <p>{work.workLocation} • {work.workScheduleType}</p>
-                                                <p>{work.startDateWork} - {work.onGoingWork ? "Present" : work.endDateWork}</p>
-                                                <p>{work.workSkills}</p>
-                                                <button className="edit-button" onClick={() => startEditWork(work)}>
-                                                    Edit
-                                                </button>
+                                                <div className="profile-modern-card-header">
+                                                    <h3 className="profile-modern-card-title">
+                                                        {work.workInstitutionName}
+                                                    </h3>
+
+                                                    <button
+                                                        className="profile-modern-edit-button"
+                                                        onClick={() => startEditWork(work)}
+                                                    >
+                                                        Edit
+                                                    </button>
+                                                </div>
+
+                                                <div className="profile-modern-card-meta">
+                                                    <span className="profile-modern-tag profile-modern-tag-highlight">
+                                                        {formatEnumValue(work.work)}
+                                                    </span>
+
+                                                    <span className="profile-modern-tag">
+                                                        {formatEnumValue(work.workLocation)}
+                                                    </span>
+
+                                                    <span className="profile-modern-tag">
+                                                        {formatEnumValue(work.workScheduleType)}
+                                                    </span>
+                                                </div>
+
+                                                <p className="profile-modern-card-date">
+                                                    {formatDate(work.startDateWork)} —{" "}
+                                                    {work.onGoingWork ? "Present" : formatDate(work.endDateWork)}
+                                                </p>
+
+                                                <p className="profile-modern-card-description">
+                                                    {work.workSkills}
+                                                </p>
+
+                                                <div className="profile-modern-skills-row">
+                                                    {splitSkills(work.workSkills).map((skill) => (
+                                                        <span className="profile-modern-skill-tag" key={skill}>
+                                                            {skill}
+                                                        </span>
+                                                    ))}
+                                                </div>
                                             </>
                                         )}
                                     </div>
                                 ))
                             )}
-                        </div>
+                        </section>
 
-                        <div className="profile-section">
-                            <h2>Education</h2>
+                        <section className="profile-modern-section">
+                            <div className="profile-modern-section-label">Education</div>
+
                             {educationList.length === 0 ? (
-                                <p>No education added yet.</p>
+                                <p className="profile-modern-empty-text">
+                                    No education added yet.
+                                </p>
                             ) : (
                                 educationList.map((education) => (
-                                    <div key={education.idProfileEducation} className="entry-card">
+                                    <div
+                                        key={education.idProfileEducation}
+                                        className="profile-modern-entry-card profile-modern-education-card"
+                                    >
+                                        <span className="profile-modern-card-accent" />
+
                                         {editingEducationId === education.idProfileEducation ? (
                                             <form onSubmit={handleUpdateEducation} className="register-form">
                                                 <label>Institution</label>
                                                 <input
                                                     type="text"
                                                     value={editingEducationData.institutionName}
-                                                    onChange={(e) => setEditingEducationData({ ...editingEducationData, institutionName: e.target.value })}
+                                                    onChange={(e) =>
+                                                        setEditingEducationData({
+                                                            ...editingEducationData,
+                                                            institutionName: e.target.value
+                                                        })
+                                                    }
                                                     required
                                                 />
 
@@ -658,7 +804,12 @@ function ProfilePage() {
                                                 <input
                                                     type="date"
                                                     value={editingEducationData.startDateSchool}
-                                                    onChange={(e) => setEditingEducationData({ ...editingEducationData, startDateSchool: e.target.value })}
+                                                    onChange={(e) =>
+                                                        setEditingEducationData({
+                                                            ...editingEducationData,
+                                                            startDateSchool: e.target.value
+                                                        })
+                                                    }
                                                     required
                                                 />
 
@@ -666,7 +817,12 @@ function ProfilePage() {
                                                     <input
                                                         type="checkbox"
                                                         checked={editingEducationData.onGoingSchool}
-                                                        onChange={(e) => setEditingEducationData({ ...editingEducationData, onGoingSchool: e.target.checked })}
+                                                        onChange={(e) =>
+                                                            setEditingEducationData({
+                                                                ...editingEducationData,
+                                                                onGoingSchool: e.target.checked
+                                                            })
+                                                        }
                                                     />
                                                     Ongoing
                                                 </label>
@@ -677,7 +833,12 @@ function ProfilePage() {
                                                         <input
                                                             type="date"
                                                             value={editingEducationData.endDateSchool}
-                                                            onChange={(e) => setEditingEducationData({ ...editingEducationData, endDateSchool: e.target.value })}
+                                                            onChange={(e) =>
+                                                                setEditingEducationData({
+                                                                    ...editingEducationData,
+                                                                    endDateSchool: e.target.value
+                                                                })
+                                                            }
                                                         />
                                                     </>
                                                 )}
@@ -686,14 +847,24 @@ function ProfilePage() {
                                                 <textarea
                                                     className="profile-textarea"
                                                     value={editingEducationData.educationalSkills}
-                                                    onChange={(e) => setEditingEducationData({ ...editingEducationData, educationalSkills: e.target.value })}
+                                                    onChange={(e) =>
+                                                        setEditingEducationData({
+                                                            ...editingEducationData,
+                                                            educationalSkills: e.target.value
+                                                        })
+                                                    }
                                                     required
                                                 />
 
                                                 <label>Degree</label>
                                                 <select
                                                     value={editingEducationData.degree}
-                                                    onChange={(e) => setEditingEducationData({ ...editingEducationData, degree: e.target.value })}
+                                                    onChange={(e) =>
+                                                        setEditingEducationData({
+                                                            ...editingEducationData,
+                                                            degree: e.target.value
+                                                        })
+                                                    }
                                                 >
                                                     <option value="HIGH_SCHOOL_DIPLOMA">High School Diploma</option>
                                                     <option value="BACHELOR">Bachelor</option>
@@ -702,40 +873,87 @@ function ProfilePage() {
                                                 </select>
 
                                                 <button type="submit">Save Education</button>
-                                                <button type="button" className="cancel-button" onClick={() => setEditingEducationId(null)}>
+                                                <button
+                                                    type="button"
+                                                    className="cancel-button"
+                                                    onClick={() => setEditingEducationId(null)}
+                                                >
                                                     Cancel
                                                 </button>
                                             </form>
                                         ) : (
                                             <>
-                                                <h3>{education.institutionName}</h3>
-                                                <p>{education.degree}</p>
-                                                <p>{education.startDateSchool} - {education.onGoingSchool ? "Present" : education.endDateSchool}</p>
-                                                <p>{education.educationalSkills}</p>
-                                                <button className="edit-button" onClick={() => startEditEducation(education)}>
-                                                    Edit
-                                                </button>
+                                                <div className="profile-modern-card-header">
+                                                    <h3 className="profile-modern-card-title">
+                                                        {education.institutionName}
+                                                    </h3>
+
+                                                    <button
+                                                        className="profile-modern-edit-button"
+                                                        onClick={() => startEditEducation(education)}
+                                                    >
+                                                        Edit
+                                                    </button>
+                                                </div>
+
+                                                <div className="profile-modern-card-meta">
+                                                    <span className="profile-modern-tag profile-modern-tag-highlight">
+                                                        {formatEnumValue(education.degree)}
+                                                    </span>
+                                                </div>
+
+                                                <p className="profile-modern-card-date">
+                                                    {formatDate(education.startDateSchool)} —{" "}
+                                                    {education.onGoingSchool
+                                                        ? "Present"
+                                                        : formatDate(education.endDateSchool)}
+                                                </p>
+
+                                                <p className="profile-modern-card-description">
+                                                    {education.educationalSkills}
+                                                </p>
+
+                                                <div className="profile-modern-skills-row">
+                                                    {splitSkills(education.educationalSkills).map((skill) => (
+                                                        <span className="profile-modern-skill-tag" key={skill}>
+                                                            {skill}
+                                                        </span>
+                                                    ))}
+                                                </div>
                                             </>
                                         )}
                                     </div>
                                 ))
                             )}
-                        </div>
+                        </section>
 
-                        <div className="profile-section">
-                            <h2>Courses</h2>
+                        <section className="profile-modern-section">
+                            <div className="profile-modern-section-label">Courses</div>
+
                             {courseList.length === 0 ? (
-                                <p>No courses added yet.</p>
+                                <p className="profile-modern-empty-text">
+                                    No courses added yet.
+                                </p>
                             ) : (
                                 courseList.map((course) => (
-                                    <div key={course.idProfileCourse} className="entry-card">
+                                    <div
+                                        key={course.idProfileCourse}
+                                        className="profile-modern-entry-card profile-modern-course-card"
+                                    >
+                                        <span className="profile-modern-card-accent" />
+
                                         {editingCourseId === course.idProfileCourse ? (
                                             <form onSubmit={handleUpdateCourse} className="register-form">
                                                 <label>Course Name</label>
                                                 <input
                                                     type="text"
                                                     value={editingCourseData.courseName}
-                                                    onChange={(e) => setEditingCourseData({ ...editingCourseData, courseName: e.target.value })}
+                                                    onChange={(e) =>
+                                                        setEditingCourseData({
+                                                            ...editingCourseData,
+                                                            courseName: e.target.value
+                                                        })
+                                                    }
                                                     required
                                                 />
 
@@ -743,7 +961,12 @@ function ProfilePage() {
                                                 <input
                                                     type="date"
                                                     value={editingCourseData.startDateCourse}
-                                                    onChange={(e) => setEditingCourseData({ ...editingCourseData, startDateCourse: e.target.value })}
+                                                    onChange={(e) =>
+                                                        setEditingCourseData({
+                                                            ...editingCourseData,
+                                                            startDateCourse: e.target.value
+                                                        })
+                                                    }
                                                     required
                                                 />
 
@@ -751,7 +974,12 @@ function ProfilePage() {
                                                 <input
                                                     type="date"
                                                     value={editingCourseData.endDateCourse}
-                                                    onChange={(e) => setEditingCourseData({ ...editingCourseData, endDateCourse: e.target.value })}
+                                                    onChange={(e) =>
+                                                        setEditingCourseData({
+                                                            ...editingCourseData,
+                                                            endDateCourse: e.target.value
+                                                        })
+                                                    }
                                                     required
                                                 />
 
@@ -759,14 +987,24 @@ function ProfilePage() {
                                                 <textarea
                                                     className="profile-textarea"
                                                     value={editingCourseData.courseSkills}
-                                                    onChange={(e) => setEditingCourseData({ ...editingCourseData, courseSkills: e.target.value })}
+                                                    onChange={(e) =>
+                                                        setEditingCourseData({
+                                                            ...editingCourseData,
+                                                            courseSkills: e.target.value
+                                                        })
+                                                    }
                                                     required
                                                 />
 
                                                 <label>Course Type</label>
                                                 <select
                                                     value={editingCourseData.course}
-                                                    onChange={(e) => setEditingCourseData({ ...editingCourseData, course: e.target.value })}
+                                                    onChange={(e) =>
+                                                        setEditingCourseData({
+                                                            ...editingCourseData,
+                                                            course: e.target.value
+                                                        })
+                                                    }
                                                 >
                                                     <option value="Computer_Science">Computer Science</option>
                                                     <option value="Software_Engineering">Software Engineering</option>
@@ -777,24 +1015,62 @@ function ProfilePage() {
                                                 </select>
 
                                                 <button type="submit">Save Course</button>
-                                                <button type="button" className="cancel-button" onClick={() => setEditingCourseId(null)}>
+                                                <button
+                                                    type="button"
+                                                    className="cancel-button"
+                                                    onClick={() => setEditingCourseId(null)}
+                                                >
                                                     Cancel
                                                 </button>
                                             </form>
                                         ) : (
                                             <>
-                                                <h3>{course.courseName}</h3>
-                                                <p>{course.course}</p>
-                                                <p>{course.startDateCourse} - {course.endDateCourse}</p>
-                                                <p>{course.courseSkills}</p>
-                                                <button className="edit-button" onClick={() => startEditCourse(course)}>
-                                                    Edit
-                                                </button>
+                                                <div className="profile-modern-card-header">
+                                                    <h3 className="profile-modern-card-title">
+                                                        {course.courseName}
+                                                    </h3>
+
+                                                    <button
+                                                        className="profile-modern-edit-button"
+                                                        onClick={() => startEditCourse(course)}
+                                                    >
+                                                        Edit
+                                                    </button>
+                                                </div>
+
+                                                <div className="profile-modern-card-meta">
+                                                    <span className="profile-modern-tag profile-modern-tag-highlight">
+                                                        {formatEnumValue(course.course)}
+                                                    </span>
+                                                </div>
+
+                                                <p className="profile-modern-card-date">
+                                                    {formatDate(course.startDateCourse)} —{" "}
+                                                    {formatDate(course.endDateCourse)}
+                                                </p>
+
+                                                <p className="profile-modern-card-description">
+                                                    {course.courseSkills}
+                                                </p>
+
+                                                <div className="profile-modern-skills-row">
+                                                    {splitSkills(course.courseSkills).map((skill) => (
+                                                        <span className="profile-modern-skill-tag" key={skill}>
+                                                            {skill}
+                                                        </span>
+                                                    ))}
+                                                </div>
                                             </>
                                         )}
                                     </div>
                                 ))
                             )}
+                        </section>
+
+                        <div className="profile-modern-footer-line">
+                            <span>{profile.name}</span>
+                            <span className="profile-modern-footer-dot" />
+                            <span>ProLink Profile</span>
                         </div>
                     </>
                 ) : (
@@ -840,7 +1116,12 @@ function ProfilePage() {
                                 <input
                                     type="text"
                                     value={newWork.workInstitutionName}
-                                    onChange={(e) => setNewWork({ ...newWork, workInstitutionName: e.target.value })}
+                                    onChange={(e) =>
+                                        setNewWork({
+                                            ...newWork,
+                                            workInstitutionName: e.target.value
+                                        })
+                                    }
                                     required
                                 />
 
@@ -848,7 +1129,12 @@ function ProfilePage() {
                                 <input
                                     type="date"
                                     value={newWork.startDateWork}
-                                    onChange={(e) => setNewWork({ ...newWork, startDateWork: e.target.value })}
+                                    onChange={(e) =>
+                                        setNewWork({
+                                            ...newWork,
+                                            startDateWork: e.target.value
+                                        })
+                                    }
                                     required
                                 />
 
@@ -856,7 +1142,12 @@ function ProfilePage() {
                                     <input
                                         type="checkbox"
                                         checked={newWork.onGoingWork}
-                                        onChange={(e) => setNewWork({ ...newWork, onGoingWork: e.target.checked })}
+                                        onChange={(e) =>
+                                            setNewWork({
+                                                ...newWork,
+                                                onGoingWork: e.target.checked
+                                            })
+                                        }
                                     />
                                     Ongoing
                                 </label>
@@ -867,7 +1158,12 @@ function ProfilePage() {
                                         <input
                                             type="date"
                                             value={newWork.endDateWork}
-                                            onChange={(e) => setNewWork({ ...newWork, endDateWork: e.target.value })}
+                                            onChange={(e) =>
+                                                setNewWork({
+                                                    ...newWork,
+                                                    endDateWork: e.target.value
+                                                })
+                                            }
                                         />
                                     </>
                                 )}
@@ -876,14 +1172,24 @@ function ProfilePage() {
                                 <textarea
                                     className="profile-textarea"
                                     value={newWork.workSkills}
-                                    onChange={(e) => setNewWork({ ...newWork, workSkills: e.target.value })}
+                                    onChange={(e) =>
+                                        setNewWork({
+                                            ...newWork,
+                                            workSkills: e.target.value
+                                        })
+                                    }
                                     required
                                 />
 
                                 <label>Work Type</label>
                                 <select
                                     value={newWork.work}
-                                    onChange={(e) => setNewWork({ ...newWork, work: e.target.value })}
+                                    onChange={(e) =>
+                                        setNewWork({
+                                            ...newWork,
+                                            work: e.target.value
+                                        })
+                                    }
                                 >
                                     <option value="Artificial_Intelligence">Artificial Intelligence</option>
                                     <option value="Software_Development">Software Development</option>
@@ -895,7 +1201,12 @@ function ProfilePage() {
                                 <label>Work Location</label>
                                 <select
                                     value={newWork.workLocation}
-                                    onChange={(e) => setNewWork({ ...newWork, workLocation: e.target.value })}
+                                    onChange={(e) =>
+                                        setNewWork({
+                                            ...newWork,
+                                            workLocation: e.target.value
+                                        })
+                                    }
                                 >
                                     <option value="On_site">On site</option>
                                     <option value="Remote">Remote</option>
@@ -905,7 +1216,12 @@ function ProfilePage() {
                                 <label>Schedule</label>
                                 <select
                                     value={newWork.workScheduleType}
-                                    onChange={(e) => setNewWork({ ...newWork, workScheduleType: e.target.value })}
+                                    onChange={(e) =>
+                                        setNewWork({
+                                            ...newWork,
+                                            workScheduleType: e.target.value
+                                        })
+                                    }
                                 >
                                     <option value="Full_Time">Full Time</option>
                                     <option value="Part_Time">Part Time</option>
@@ -923,7 +1239,12 @@ function ProfilePage() {
                                 <input
                                     type="text"
                                     value={newEducation.institutionName}
-                                    onChange={(e) => setNewEducation({ ...newEducation, institutionName: e.target.value })}
+                                    onChange={(e) =>
+                                        setNewEducation({
+                                            ...newEducation,
+                                            institutionName: e.target.value
+                                        })
+                                    }
                                     required
                                 />
 
@@ -931,7 +1252,12 @@ function ProfilePage() {
                                 <input
                                     type="date"
                                     value={newEducation.startDateSchool}
-                                    onChange={(e) => setNewEducation({ ...newEducation, startDateSchool: e.target.value })}
+                                    onChange={(e) =>
+                                        setNewEducation({
+                                            ...newEducation,
+                                            startDateSchool: e.target.value
+                                        })
+                                    }
                                     required
                                 />
 
@@ -939,7 +1265,12 @@ function ProfilePage() {
                                     <input
                                         type="checkbox"
                                         checked={newEducation.onGoingSchool}
-                                        onChange={(e) => setNewEducation({ ...newEducation, onGoingSchool: e.target.checked })}
+                                        onChange={(e) =>
+                                            setNewEducation({
+                                                ...newEducation,
+                                                onGoingSchool: e.target.checked
+                                            })
+                                        }
                                     />
                                     Ongoing
                                 </label>
@@ -950,7 +1281,12 @@ function ProfilePage() {
                                         <input
                                             type="date"
                                             value={newEducation.endDateSchool}
-                                            onChange={(e) => setNewEducation({ ...newEducation, endDateSchool: e.target.value })}
+                                            onChange={(e) =>
+                                                setNewEducation({
+                                                    ...newEducation,
+                                                    endDateSchool: e.target.value
+                                                })
+                                            }
                                         />
                                     </>
                                 )}
@@ -959,14 +1295,24 @@ function ProfilePage() {
                                 <textarea
                                     className="profile-textarea"
                                     value={newEducation.educationalSkills}
-                                    onChange={(e) => setNewEducation({ ...newEducation, educationalSkills: e.target.value })}
+                                    onChange={(e) =>
+                                        setNewEducation({
+                                            ...newEducation,
+                                            educationalSkills: e.target.value
+                                        })
+                                    }
                                     required
                                 />
 
                                 <label>Degree</label>
                                 <select
                                     value={newEducation.degree}
-                                    onChange={(e) => setNewEducation({ ...newEducation, degree: e.target.value })}
+                                    onChange={(e) =>
+                                        setNewEducation({
+                                            ...newEducation,
+                                            degree: e.target.value
+                                        })
+                                    }
                                 >
                                     <option value="HIGH_SCHOOL_DIPLOMA">High School Diploma</option>
                                     <option value="BACHELOR">Bachelor</option>
@@ -985,7 +1331,12 @@ function ProfilePage() {
                                 <input
                                     type="text"
                                     value={newCourse.courseName}
-                                    onChange={(e) => setNewCourse({ ...newCourse, courseName: e.target.value })}
+                                    onChange={(e) =>
+                                        setNewCourse({
+                                            ...newCourse,
+                                            courseName: e.target.value
+                                        })
+                                    }
                                     required
                                 />
 
@@ -993,7 +1344,12 @@ function ProfilePage() {
                                 <input
                                     type="date"
                                     value={newCourse.startDateCourse}
-                                    onChange={(e) => setNewCourse({ ...newCourse, startDateCourse: e.target.value })}
+                                    onChange={(e) =>
+                                        setNewCourse({
+                                            ...newCourse,
+                                            startDateCourse: e.target.value
+                                        })
+                                    }
                                     required
                                 />
 
@@ -1001,7 +1357,12 @@ function ProfilePage() {
                                 <input
                                     type="date"
                                     value={newCourse.endDateCourse}
-                                    onChange={(e) => setNewCourse({ ...newCourse, endDateCourse: e.target.value })}
+                                    onChange={(e) =>
+                                        setNewCourse({
+                                            ...newCourse,
+                                            endDateCourse: e.target.value
+                                        })
+                                    }
                                     required
                                 />
 
@@ -1009,14 +1370,24 @@ function ProfilePage() {
                                 <textarea
                                     className="profile-textarea"
                                     value={newCourse.courseSkills}
-                                    onChange={(e) => setNewCourse({ ...newCourse, courseSkills: e.target.value })}
+                                    onChange={(e) =>
+                                        setNewCourse({
+                                            ...newCourse,
+                                            courseSkills: e.target.value
+                                        })
+                                    }
                                     required
                                 />
 
                                 <label>Course Type</label>
                                 <select
                                     value={newCourse.course}
-                                    onChange={(e) => setNewCourse({ ...newCourse, course: e.target.value })}
+                                    onChange={(e) =>
+                                        setNewCourse({
+                                            ...newCourse,
+                                            course: e.target.value
+                                        })
+                                    }
                                 >
                                     <option value="Computer_Science">Computer Science</option>
                                     <option value="Software_Engineering">Software Engineering</option>
@@ -1038,5 +1409,4 @@ function ProfilePage() {
         </div>
     );
 }
-
 export default ProfilePage;
