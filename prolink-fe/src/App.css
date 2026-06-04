@@ -951,28 +951,39 @@ body {
 
 .chat-message {
   max-width: 70%;
-  padding: 12px 14px;
-  border-radius: 16px;
-  background: #f3f4f6;
+  padding: 14px 16px;
+  border-radius: 18px;
+  border: 1px solid #2a2f3a;
+  color: #f8fafc;
 }
 
 .chat-message-me {
   align-self: flex-end;
-  background: #dbeafe;
+  background: #1d4ed8;
+  color: #ffffff;
 }
 
 .chat-message-other {
   align-self: flex-start;
-  background: #f3f4f6;
+  background: #1f2937;
+  color: #ffffff;
+}
+
+.chat-message strong {
+  display: block;
+  margin-bottom: 6px;
+  color: #ffffff;
+  font-weight: 700;
 }
 
 .chat-message p {
   margin: 6px 0;
+  color: #ffffff;
 }
 
 .chat-message span {
   font-size: 12px;
-  color: #6b7280;
+  color: #cbd5e1;
 }
 
 .chat-form {
