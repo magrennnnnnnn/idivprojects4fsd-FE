@@ -6,6 +6,7 @@ function RegisterForm() {
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState("");
     const [error, setError] = useState("");
+    const [role, setRole] = useState("STANDARD_USER");
 
     const handleRegister = async (e) => {
         e.preventDefault();
@@ -22,7 +23,8 @@ function RegisterForm() {
                 },
                 body: JSON.stringify({
                     email: email,
-                    password: password
+                    password: password,
+                    role: role
                 })
             });
 
@@ -65,6 +67,17 @@ function RegisterForm() {
                         onChange={(e) => setPassword(e.target.value)}
                         required
                     />
+
+                    <label>Account type</label>
+
+                    <select
+                        value={role}
+                        onChange={(e) => setRole(e.target.value)}
+                    >
+                        <option value="STANDARD_USER">Standard user</option>
+                        <option value="PREMIUM_USER">Premium user</option>
+                        <option value="COMPANY">Company</option>
+                    </select>
 
                     <button type="submit">Register</button>
                 </form>
