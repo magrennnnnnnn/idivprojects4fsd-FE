@@ -24,7 +24,7 @@ function RegisterForm() {
                 body: JSON.stringify({
                     email: email,
                     password: password,
-                    role: role
+                    roles: role
                 })
             });
 
