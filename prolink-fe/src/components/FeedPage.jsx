@@ -9,6 +9,7 @@ function FeedPage() {
 
     const [postTitle, setPostTitle] = useState("");
     const [postText, setPostText] = useState("");
+    const [postImage, setPostImage] = useState(null);
 
     const [loading, setLoading] = useState(false);
     const [posting, setPosting] = useState(false);
@@ -167,24 +168,29 @@ function FeedPage() {
             return;
         }
 
-        if (!postText.trim()) {
-            setError("Post text is required");
+        const hasText = postText.trim().length > 0;
+        const hasImage = postImage !== null;
+
+        if (!hasText && !hasImage) {
+            setError("Please add text or an image to your post");
             return;
         }
 
         try {
             setPosting(true);
 
+            const formData = new FormData();
+            formData.append("postTitle", postTitle.trim());
+            formData.append("postText", postText.trim());
+
+            if (postImage) {
+                formData.append("image", postImage);
+            }
+
             const response = await fetch("http://localhost:8080/posts", {
                 method: "POST",
                 credentials: "include",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    postTitle: postTitle.trim(),
-                    postText: postText.trim()
-                })
+                body: formData
             });
 
             if (response.status === 401) {
@@ -204,6 +210,7 @@ function FeedPage() {
 
             setPostTitle("");
             setPostText("");
+            setPostImage(null);
             setMessage("Post created successfully");
 
             await loadPosts(profile);
@@ -383,6 +390,19 @@ function FeedPage() {
                                     onChange={(e) => setPostText(e.target.value)}
                                     maxLength={10000}
                                 />
+
+                                <input
+                                    className="composer-file-input"
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => setPostImage(e.target.files[0])}
+                                />
+
+                                {postImage && (
+                                    <p className="selected-file-name">
+                                        Selected image: {postImage.name}
+                                    </p>
+                                )}
                             </div>
                         </div>
 
@@ -390,7 +410,7 @@ function FeedPage() {
                             <button
                                 type="submit"
                                 className="post-submit-button"
-                                disabled={posting || !postTitle.trim() || !postText.trim()}
+                                disabled={posting || !postTitle.trim() || (!postText.trim() && !postImage)}
                             >
                                 {posting ? "Posting..." : "Post"}
                             </button>
@@ -425,7 +445,18 @@ function FeedPage() {
 
                                 <div className="feed-post-content">
                                     <h2>{post.postTitle}</h2>
-                                    <p>{post.postText}</p>
+
+                                    {post.postText && (
+                                        <p>{post.postText}</p>
+                                    )}
+
+                                    {post.imageUrl && (
+                                        <img
+                                            src={`http://localhost:8080${post.imageUrl}`}
+                                            alt="Post"
+                                            className="post-image"
+                                        />
+                                    )}
                                 </div>
 
                                 {shouldShowConnectButton(post.idProfile) && (
