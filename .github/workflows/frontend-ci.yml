@@ -14,7 +14,7 @@ on:
 jobs:
   build:
     name: Build Frontend
-    runs-on: [self-hosted, linux, docker, prolink-frontend]
+    runs-on: [self-hosted, Linux, X64, docker, prolink-frontend]
 
     steps:
       - name: Checkout repository
@@ -28,7 +28,7 @@ jobs:
 
   deploy:
     name: Deploy Frontend Container
-    runs-on: [self-hosted, linux, docker, prolink-frontend]
+    runs-on: [self-hosted, Linux, X64, docker, prolink-frontend]
     needs: build
 
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
@@ -56,11 +56,17 @@ jobs:
       - name: Wait for frontend startup
         run: sleep 5
 
-      - name: Show frontend container status
-        run: sudo docker ps -a --filter "name=prolink-frontend"
-
       - name: Show frontend logs
         run: sudo docker logs prolink-frontend --tail 80
+
+      - name: Check frontend container is running
+        run: |
+          STATUS=$(sudo docker inspect -f '{{.State.Running}}' prolink-frontend)
+          if [ "$STATUS" != "true" ]; then
+            echo "Frontend container is not running"
+            exit 1
+          fi
+          echo "Frontend container is running"
 
       - name: Health check frontend
         run: curl -I http://localhost:5173
