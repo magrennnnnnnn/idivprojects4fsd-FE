@@ -50,6 +50,7 @@ jobs:
         run: |
           sudo docker run -d \
             --name prolink-frontend \
+            --restart unless-stopped \
             -p 5173:80 \
             prolink-frontend:latest
 
