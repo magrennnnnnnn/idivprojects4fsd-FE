@@ -69,4 +69,4 @@ jobs:
           echo "Frontend container is running"
 
       - name: Health check frontend
-        run: curl -I http://localhost:5173
+        run: curl -I http://host.docker.internal:5173
