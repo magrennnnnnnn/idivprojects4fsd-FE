@@ -38,3 +38,11 @@ describe("Authentication", () => {
         cy.contains(/invalid|incorrect|error/i).should("be.visible");
     });
 });
+
+describe("ProLink frontend", () => {
+    it("opens the register page", () => {
+        cy.visit("/");
+
+        cy.contains(/register|login|prolink/i).should("be.visible");
+    });
+});
