@@ -1,22 +1,77 @@
-Cypress.Commands.add("registerAndLogin", (email, password, role = "STANDARD_USER") => {
-    cy.visit("/");
+const API = "http://localhost:8080";
 
-    cy.get('input[name="email"]').type(email);
-    cy.get('input[name="password"]').type(password);
+Cypress.Commands.add("mockCurrentProfile", (profile = {}) => {
+    const defaultProfile = {
+        idProfile: 10,
+        name: "Cypress User",
+        location: "Eindhoven",
+        personalDetails: "This profile is used for Cypress testing."
+    };
 
-    cy.get("body").then(($body) => {
-        if ($body.find('select[name="role"]').length > 0) {
-            cy.get('select[name="role"]').select(role);
+    cy.intercept("GET", `${API}/profiles/me`, {
+        statusCode: 200,
+        body: {
+            ...defaultProfile,
+            ...profile
         }
-    });
+    }).as("getMyProfile");
+});
 
-    cy.contains("button", /register/i).click();
+Cypress.Commands.add("mockEmptyNetwork", () => {
+    cy.intercept("GET", `${API}/connections/me`, {
+        statusCode: 200,
+        body: []
+    }).as("getConnections");
 
-    cy.visit("/login");
+    cy.intercept("GET", `${API}/connections/sent`, {
+        statusCode: 200,
+        body: []
+    }).as("getSentRequests");
 
-    cy.get('input[name="email"]').type(email);
-    cy.get('input[name="password"]').type(password);
-    cy.contains("button", /login/i).click();
+    cy.intercept("GET", `${API}/connections/received`, {
+        statusCode: 200,
+        body: []
+    }).as("getReceivedRequests");
+});
 
-    cy.url().should("include", "/feed");
+Cypress.Commands.add("mockFeedPage", ({ profile, posts = [] } = {}) => {
+    cy.mockCurrentProfile(profile);
+    cy.mockEmptyNetwork();
+
+    cy.intercept("GET", `${API}/posts`, {
+        statusCode: 200,
+        body: posts
+    }).as("getPosts");
+});
+
+Cypress.Commands.add("mockProfilePage", ({ profile, work = [], education = [], courses = [] } = {}) => {
+    const usedProfile = {
+        idProfile: 10,
+        name: "Cypress User",
+        location: "Eindhoven",
+        personalDetails: "This profile is used for Cypress testing.",
+        ...profile
+    };
+
+    cy.mockCurrentProfile(usedProfile);
+
+    cy.intercept("GET", `${API}/work/profile/${usedProfile.idProfile}`, {
+        statusCode: 200,
+        body: work
+    }).as("getWork");
+
+    cy.intercept("GET", `${API}/education/profile/${usedProfile.idProfile}`, {
+        statusCode: 200,
+        body: education
+    }).as("getEducation");
+
+    cy.intercept("GET", `${API}/course/profile/${usedProfile.idProfile}`, {
+        statusCode: 200,
+        body: courses
+    }).as("getCourses");
+});
+
+Cypress.Commands.add("fillAuthForm", (email, password) => {
+    cy.get('input[placeholder="Enter your email"]').clear().type(email);
+    cy.get('input[placeholder="Enter your password"]').clear().type(password);
 });

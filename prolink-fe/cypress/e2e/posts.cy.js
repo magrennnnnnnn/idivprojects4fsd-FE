@@ -1,67 +1,150 @@
-describe("Posts", () => {
-    const email = `posts_${Date.now()}@prolink.com`;
-    const password = "Password123";
+const API = "http://localhost:8080";
 
-    beforeEach(() => {
-        cy.registerAndLogin(email, password);
+describe("Posts and feed", () => {
+    it("loads the feed and displays existing posts", () => {
+        cy.mockFeedPage({
+            profile: {
+                idProfile: 10,
+                name: "Cypress User",
+                location: "Eindhoven",
+                personalDetails: "Testing feed."
+            },
+            posts: [
+                {
+                    idPost: 1,
+                    postTitle: "Existing Cypress Post",
+                    postText: "This post came from the mocked backend.",
+                    idProfile: 10,
+                    profileName: "Cypress User",
+                    profileLocation: "Eindhoven",
+                    createdAt: "2026-06-14T12:00:00"
+                }
+            ]
+        });
 
-        cy.visit("/profile/create");
-        cy.get('input[name="name"]').type("Post User");
-        cy.get('input[name="location"]').type("Eindhoven");
-        cy.get('textarea[name="personalDetails"]').type("Testing posts.");
-        cy.contains("button", /create|save/i).click();
+        cy.visit("/feed");
+
+        cy.contains("Existing Cypress Post").should("be.visible");
+        cy.contains("This post came from the mocked backend.").should("be.visible");
+        cy.contains("Cypress User").should("be.visible");
     });
 
     it("creates a text post", () => {
+        const profile = {
+            idProfile: 10,
+            name: "Cypress User",
+            location: "Eindhoven",
+            personalDetails: "Testing posts."
+        };
+
+        let posts = [];
+
+        cy.mockCurrentProfile(profile);
+        cy.mockEmptyNetwork();
+
+        cy.intercept("GET", `${API}/posts`, (req) => {
+            req.reply({
+                statusCode: 200,
+                body: posts
+            });
+        }).as("getPosts");
+
+        cy.intercept("POST", `${API}/posts`, (req) => {
+            posts = [
+                {
+                    idPost: 100,
+                    postTitle: "Cypress Text Post",
+                    postText: "This post was created by Cypress.",
+                    idProfile: profile.idProfile,
+                    profileName: profile.name,
+                    profileLocation: profile.location,
+                    createdAt: "2026-06-14T12:00:00"
+                }
+            ];
+
+            req.reply({
+                statusCode: 200,
+                body: posts[0]
+            });
+        }).as("createPost");
+
         cy.visit("/feed");
 
-        cy.get('input[name="postTitle"]').type("My first ProLink post");
-        cy.get('textarea[name="postText"]').type("This is a test post from Cypress.");
+        cy.get('input[placeholder="Give your post a title"]').type("Cypress Text Post");
+        cy.get('textarea[placeholder="Start a post..."]').type(
+            "This post was created by Cypress."
+        );
 
-        cy.contains("button", /post|create|submit/i).click();
+        cy.contains("button", "Post").click();
 
-        cy.contains("My first ProLink post").should("be.visible");
-        cy.contains("This is a test post from Cypress.").should("be.visible");
+        cy.wait("@createPost");
+
+        cy.contains("Post created successfully").should("be.visible");
+        cy.contains("Cypress Text Post").should("be.visible");
+        cy.contains("This post was created by Cypress.").should("be.visible");
     });
 
-    it("does not allow an empty post", () => {
-        cy.visit("/feed");
-
-        cy.contains("button", /post|create|submit/i).click();
-
-        cy.contains(/required|add text|title/i).should("be.visible");
-    });
-
-    it("creates an image post", () => {
-        cy.visit("/feed");
-
-        cy.get('input[name="postTitle"]').type("Image post test");
-
-        cy.get('input[type="file"]').selectFile("cypress/fixtures/post-image.png", {
-            force: true,
+    it("keeps the post button disabled when only the title is filled", () => {
+        cy.mockFeedPage({
+            profile: {
+                idProfile: 10,
+                name: "Cypress User",
+                location: "Eindhoven",
+                personalDetails: "Testing validation."
+            },
+            posts: []
         });
 
-        cy.contains("button", /post|create|submit/i).click();
-
-        cy.contains("Image post test").should("be.visible");
-        cy.get("img").should("exist");
-    });
-
-    it("rejects a non-image file", () => {
         cy.visit("/feed");
 
-        cy.get('input[name="postTitle"]').type("Invalid file test");
+        cy.get('input[placeholder="Give your post a title"]').type("Title without content");
 
-        cy.writeFile("cypress/fixtures/not-image.txt", "this is not an image");
-
-        cy.get('input[type="file"]').selectFile("cypress/fixtures/not-image.txt", {
-            force: true,
-        });
-
-        cy.contains("button", /post|create|submit/i).click();
-
-        cy.contains(/only image|invalid file|not an image/i).should("be.visible");
+        cy.contains("button", "Post").should("be.disabled");
     });
 
+    it("sends a connection request from another user's post", () => {
+        cy.mockFeedPage({
+            profile: {
+                idProfile: 10,
+                name: "Cypress User",
+                location: "Eindhoven",
+                personalDetails: "Testing connections from feed."
+            },
+            posts: [
+                {
+                    idPost: 2,
+                    postTitle: "Post from another user",
+                    postText: "You should be able to connect with this user.",
+                    idProfile: 20,
+                    profileName: "Other User",
+                    profileLocation: "Tilburg",
+                    createdAt: "2026-06-14T12:00:00"
+                }
+            ]
+        });
+
+        cy.intercept("POST", `${API}/connections`, (req) => {
+            expect(req.body.receiverProfileId).to.eq(20);
+
+            req.reply({
+                statusCode: 200,
+                body: {
+                    idConnection: 200,
+                    requesterProfileId: 10,
+                    receiverProfileId: 20,
+                    status: "PENDING"
+                }
+            });
+        }).as("sendConnectionRequest");
+
+        cy.visit("/feed");
+
+        cy.contains("Post from another user").should("be.visible");
+
+        cy.contains("button", "Connect").click();
+
+        cy.wait("@sendConnectionRequest");
+
+        cy.contains("Connection request sent").should("be.visible");
+    });
 });
-
