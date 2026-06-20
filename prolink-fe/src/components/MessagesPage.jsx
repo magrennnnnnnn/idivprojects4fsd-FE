@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "./App.css";
-import "./prolink-theme.css";
+
 
 function MessagesPage() {
     const navigate = useNavigate();
