@@ -34,7 +34,7 @@ body {
     padding-bottom: 3rem;
 }
 
-/* NAVBAR */
+
 
 .prolink-topbar {
     background: var(--pl-bg);
@@ -59,35 +59,42 @@ body {
 
 .prolink-search {
     position: relative;
-    max-width: 280px;
+    max-width: 340px;
     width: 100%;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
 }
 
 .prolink-search span {
     position: absolute;
-    left: 10px;
+    left: 12px;
     top: 50%;
     transform: translateY(-50%);
     color: #4a4840;
     font-size: 0.85rem;
+    pointer-events: none;
+    z-index: 2;
 }
 
 .prolink-search input {
     width: 100%;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 8px;
-    padding: 7px 12px 7px 32px;
-    color: var(--pl-text);
-    font-family: "DM Sans", sans-serif;
-    font-size: 0.82rem;
-    outline: none;
-    transition: all 0.2s;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 10px !important;
+    padding: 9px 14px 9px 36px !important;
+    color: #e8e6e0 !important;
+    font-family: "DM Sans", sans-serif !important;
+    font-size: 0.9rem !important;
+    outline: none !important;
+    box-shadow: none !important;
 }
 
 .prolink-search input:focus {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
 }
 
 .topbar-actions {
@@ -131,7 +138,7 @@ body {
     text-decoration: none;
 }
 
-/* MAIN NAV */
+
 
 .prolink-nav.simple-nav {
     background: var(--pl-bg);
@@ -179,7 +186,7 @@ body {
     background: var(--pl-text);
 }
 
-/* PAGE LAYOUT */
+
 
 .feed-shell {
     max-width: 680px;
@@ -190,7 +197,7 @@ body {
     gap: 1.5rem;
 }
 
-/* COMPOSER / BANNERS */
+
 
 .post-composer-card {
     background: var(--pl-card);
@@ -271,7 +278,7 @@ body {
     margin-top: 1rem;
 }
 
-/* CARDS */
+
 
 .feed-posts {
     display: flex;
@@ -380,7 +387,7 @@ body {
     object-fit: cover;
 }
 
-/* BUTTONS */
+
 
 .post-submit-button,
 .edit-button,
@@ -435,7 +442,7 @@ body {
     color: var(--pl-text);
 }
 
-/* STATUSES */
+
 
 .feed-status-message,
 .empty-feed-card p {
@@ -459,7 +466,7 @@ body {
     border-radius: 10px;
 }
 
-/* CHAT */
+
 
 .chat-card {
     padding: 1.2rem;
@@ -520,7 +527,7 @@ body {
     flex: 1;
 }
 
-/* RESPONSIVE */
+
 
 @media (max-width: 800px) {
     .prolink-topbar {
