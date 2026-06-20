@@ -10,6 +10,7 @@ import ChatPage from "./components/ChatPage.jsx";
 import MessagesPage from "./components/MessagesPage.jsx";
 import "./App.css";
 import "./prolink-theme.css";
+import ViewProfilePage from "./components/ViewProfilePage.jsx";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
               <Route path="/network" element={<NetworkPage />} />
               <Route path="/chat/:profileId" element={<ChatPage />} />
               <Route path="/messages" element={<MessagesPage />} />
+              <Route path="/profiles/:profileId" element={<ViewProfilePage />} />
           </Routes>
       </BrowserRouter>
   );
