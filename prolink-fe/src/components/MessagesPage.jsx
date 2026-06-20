@@ -8,6 +8,7 @@ function MessagesPage() {
     const [connections, setConnections] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [searchTerm, setSearchTerm] = useState("");
 
     useEffect(() => {
         void loadMessagesPage();
@@ -120,12 +121,36 @@ function MessagesPage() {
         return name.trim().charAt(0).toUpperCase();
     };
 
+
+    const filteredConnections = connections.filter((connection) => {
+        const search = searchTerm.toLowerCase().trim();
+
+        if (!search) {
+            return true;
+        }
+
+        return (
+            getOtherProfileName(connection)?.toLowerCase().includes(search) ||
+            getOtherProfileLocation(connection)?.toLowerCase().includes(search)
+        );
+    });
+
     return (
         <div className="feed-page">
             <header className="prolink-topbar">
                 <Link to="/feed" className="prolink-logo">
                     ProLink
                 </Link>
+
+                <div className="prolink-search">
+                    <span>⌕</span>
+                    <input
+                        type="text"
+                        placeholder="Search connections"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
 
                 <div className="topbar-actions">
                     <Link to="/profile" className="small-avatar avatar-link">
@@ -166,13 +191,13 @@ function MessagesPage() {
                 </section>
 
                 <section className="feed-posts">
-                    {connections.length === 0 ? (
+                    {filteredConnections.length === 0 ? (
                         <div className="empty-feed-card">
                             <h2>No connections yet</h2>
                             <p>You need accepted connections before you can send messages.</p>
                         </div>
                     ) : (
-                        connections.map((connection) => (
+                        filteredConnections.map((connection) => (
                             <article key={connection.idConnection} className="feed-post-card">
                                 <div className="feed-post-header">
                                     <div className="post-author-avatar">

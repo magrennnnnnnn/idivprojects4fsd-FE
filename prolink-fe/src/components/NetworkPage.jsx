@@ -12,6 +12,7 @@ function NetworkPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [message, setMessage] = useState("");
+    const [searchTerm, setSearchTerm] = useState("");
 
     useEffect(() => {
         void loadNetworkPage();
@@ -209,6 +210,36 @@ function NetworkPage() {
         return name.trim().charAt(0).toUpperCase();
     };
 
+    const search = searchTerm.toLowerCase().trim();
+
+    const filteredReceivedRequests = receivedRequests.filter((request) => {
+        if (!search) return true;
+
+        return (
+            request.requesterProfileName?.toLowerCase().includes(search) ||
+            request.requesterProfileLocation?.toLowerCase().includes(search)
+        );
+    });
+
+    const filteredSentRequests = sentRequests.filter((request) => {
+        if (!search) return true;
+
+        return (
+            request.receiverProfileName?.toLowerCase().includes(search) ||
+            request.receiverProfileLocation?.toLowerCase().includes(search)
+        );
+    });
+
+    const filteredConnections = connections.filter((connection) => {
+        if (!search) return true;
+
+        return (
+            getOtherProfileName(connection)?.toLowerCase().includes(search) ||
+            getOtherProfileLocation(connection)?.toLowerCase().includes(search)
+        );
+    });
+
+
     return (
         <div className="feed-page">
             <header className="prolink-topbar">
@@ -218,7 +249,12 @@ function NetworkPage() {
 
                 <div className="prolink-search">
                     <span>⌕</span>
-                    <input type="text" placeholder="Search" />
+                    <input
+                        type="text"
+                        placeholder="Search people"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
                 </div>
 
                 <div className="topbar-actions">
@@ -238,6 +274,13 @@ function NetworkPage() {
                     <span>☍</span>
                     Network
                 </Link>
+
+
+                <Link to="/messages" className="nav-item">
+                    <span>✉</span>
+                    Messages
+                </Link>
+
 
                 <Link to="/profile" className="nav-item">
                     <span>♙</span>
@@ -260,10 +303,10 @@ function NetworkPage() {
                         <div className="feed-post-content">
                             <h2>Received Requests</h2>
 
-                            {receivedRequests.length === 0 ? (
+                            {filteredReceivedRequests.length === 0 ? (
                                 <p>No pending received requests.</p>
                             ) : (
-                                receivedRequests.map((request) => (
+                                filteredReceivedRequests.map((request) => (
                                     <div key={request.idConnection} className="entry-card">
                                         <h3>{request.requesterProfileName}</h3>
                                         <p>{request.requesterProfileLocation}</p>
@@ -294,10 +337,10 @@ function NetworkPage() {
                         <div className="feed-post-content">
                             <h2>Sent Requests</h2>
 
-                            {sentRequests.length === 0 ? (
+                            {filteredSentRequests.length === 0 ? (
                                 <p>No pending sent requests.</p>
                             ) : (
-                                sentRequests.map((request) => (
+                                filteredSentRequests.map((request) => (
                                     <div key={request.idConnection} className="entry-card">
                                         <h3>{request.receiverProfileName}</h3>
                                         <p>{request.receiverProfileLocation}</p>
@@ -312,10 +355,10 @@ function NetworkPage() {
                         <div className="feed-post-content">
                             <h2>Connections</h2>
 
-                            {connections.length === 0 ? (
+                            {filteredConnections.length === 0 ? (
                                 <p>You do not have accepted connections yet.</p>
                             ) : (
-                                connections.map((connection) => (
+                                filteredConnections.map((connection) => (
                                     <div key={connection.idConnection} className="entry-card">
                                         <h3>{getOtherProfileName(connection)}</h3>
                                         <p>{getOtherProfileLocation(connection)}</p>

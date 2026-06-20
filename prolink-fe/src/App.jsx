@@ -9,6 +9,7 @@ import NetworkPage from "./components/NetworkPage.jsx";
 import ChatPage from "./components/ChatPage.jsx";
 import MessagesPage from "./components/MessagesPage.jsx";
 import "./App.css";
+import "./prolink-theme.css";
 
 function App() {
   return (

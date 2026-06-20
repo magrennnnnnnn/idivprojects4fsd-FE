@@ -188,32 +188,59 @@ function ChatPage() {
     };
 
     return (
-        <div className="feed-page">
-            <header className="prolink-topbar">
-                <Link to="/feed" className="prolink-logo">
-                    ProLink
-                </Link>
+            <div className="feed-page">
+                <header className="prolink-topbar">
+                    <Link to="/feed" className="prolink-logo">
+                        ProLink
+                    </Link>
 
-                <div className="topbar-actions">
+                    <div className="prolink-search">
+                        <span>⌕</span>
+                        <input
+                            type="text"
+                            placeholder="Search"
+                            disabled
+                        />
+                    </div>
+
+                    <div className="topbar-actions">
+                        <Link to="/profile" className="small-avatar avatar-link">
+                            {myProfile?.name ? myProfile.name.charAt(0).toUpperCase() : "U"}
+                        </Link>
+                    </div>
+                </header>
+
+                <nav className="prolink-nav simple-nav">
+                    <Link to="/feed" className="nav-item">
+                        <span>⌂</span>
+                        Feed
+                    </Link>
+
                     <Link to="/network" className="nav-item">
+                        <span>☍</span>
                         Network
                     </Link>
 
-                    <Link to="/profile" className="small-avatar avatar-link">
-                        {myProfile?.name ? myProfile.name.charAt(0).toUpperCase() : "U"}
+                    <Link to="/messages" className="nav-item active">
+                        <span>✉</span>
+                        Messages
                     </Link>
-                </div>
-            </header>
 
-            <main className="feed-shell">
-                {loading && <p className="feed-status-message">Loading chat...</p>}
-                {error && <p className="error-message">{error}</p>}
+                    <Link to="/profile" className="nav-item">
+                        <span>♙</span>
+                        Profile
+                    </Link>
+                </nav>
 
-                <section className="post-composer-card">
-                    <h1>Chat with {getOtherProfileName()}</h1>
-                </section>
+                <main className="feed-shell">
+                    {loading && <p className="feed-status-message">Loading chat...</p>}
+                    {error && <p className="error-message">{error}</p>}
 
-                <section className="feed-post-card chat-card">
+                    <section className="post-composer-card">
+                        <h1>Chat with {getOtherProfileName()}</h1>
+                    </section>
+
+                    <section className="feed-post-card chat-card">
                     <div className="chat-messages">
                         {messages.length === 0 ? (
                             <p className="feed-status-message">

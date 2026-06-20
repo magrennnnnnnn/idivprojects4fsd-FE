@@ -5,6 +5,7 @@ function FeedPage() {
     const navigate = useNavigate();
 
     const [profile, setProfile] = useState(null);
+    const [searchTerm, setSearchTerm] = useState("");
     const [posts, setPosts] = useState([]);
 
     const [postTitle, setPostTitle] = useState("");
@@ -294,6 +295,21 @@ function FeedPage() {
         );
     };
 
+    const filteredPosts = posts.filter((post) => {
+        const search = searchTerm.toLowerCase().trim();
+
+        if (!search) {
+            return true;
+        }
+
+        return (
+            post.postTitle?.toLowerCase().includes(search) ||
+            post.postText?.toLowerCase().includes(search) ||
+            post.authorName?.toLowerCase().includes(search) ||
+            post.authorLocation?.toLowerCase().includes(search)
+        );
+    });
+
     const shouldShowConnectButton = (postProfileId) => {
         if (!profile || !postProfileId) {
             return false;
@@ -327,7 +343,12 @@ function FeedPage() {
 
                 <div className="prolink-search">
                     <span>⌕</span>
-                    <input type="text" placeholder="Search" />
+                    <input
+                        type="text"
+                        placeholder="Search people or keywords"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
                 </div>
 
                 <div className="topbar-actions">
@@ -419,13 +440,13 @@ function FeedPage() {
                 </section>
 
                 <section className="feed-posts">
-                    {posts.length === 0 ? (
+                    {filteredPosts.length === 0 ? (
                         <div className="empty-feed-card">
                             <h2>No posts yet</h2>
                             <p>Create the first post on ProLink.</p>
                         </div>
                     ) : (
-                        posts.map((post) => (
+                        filteredPosts.map((post) => (
                             <article key={post.idPost} className="feed-post-card">
                                 <div className="feed-post-header">
                                     <div className="post-author-avatar">
