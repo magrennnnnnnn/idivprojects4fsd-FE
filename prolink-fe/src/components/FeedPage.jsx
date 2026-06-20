@@ -346,7 +346,7 @@ function FeedPage() {
                     <span>⌕</span>
                     <input
                         type="text"
-                        placeholder="Search people or keywords"
+                        placeholder="Search people or posts"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
