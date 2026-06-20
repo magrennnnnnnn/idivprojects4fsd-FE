@@ -365,6 +365,25 @@ function FeedPage() {
         );
     };
 
+    const hasValidImageUrl = (imageUrl) => {
+        if (!imageUrl) {
+            return false;
+        }
+
+        const cleanUrl = imageUrl.trim();
+
+        return (
+            cleanUrl.length > 0 &&
+            cleanUrl !== "null" &&
+            cleanUrl !== "undefined" &&
+            cleanUrl.startsWith("/uploads/")
+        );
+    };
+
+    const getPostImageSrc = (imageUrl) => {
+        return `http://localhost:8080${imageUrl}`;
+    };
+
     return (
         <div className="feed-page">
             <header className="prolink-topbar">
@@ -536,11 +555,14 @@ function FeedPage() {
                                         <p>{post.postText}</p>
                                     )}
 
-                                    {post.imageUrl && (
+                                    {hasValidImageUrl(post.imageUrl) && (
                                         <img
-                                            src={`http://localhost:8080${post.imageUrl}`}
+                                            src={getPostImageSrc(post.imageUrl)}
                                             alt="Post"
                                             className="post-image"
+                                            onError={(e) => {
+                                                e.currentTarget.style.display = "none";
+                                            }}
                                         />
                                     )}
                                 </div>
