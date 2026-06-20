@@ -20,6 +20,7 @@ function FeedPage() {
     const [connections, setConnections] = useState([]);
     const [sentRequests, setSentRequests] = useState([]);
     const [receivedRequests, setReceivedRequests] = useState([]);
+    const [openPostMenuId, setOpenPostMenuId] = useState(null);
 
     useEffect(() => {
         void loadFeedPage();
@@ -335,6 +336,35 @@ function FeedPage() {
         return true;
     };
 
+    const getProfilePath = (profileId) => {
+        if (!profileId) {
+            return "/feed";
+        }
+
+        if (profile && Number(profileId) === Number(profile.idProfile)) {
+            return "/profile";
+        }
+
+        return `/profiles/${profileId}`;
+    };
+
+    const isOwnPost = (post) => {
+        return profile && Number(post.idProfile) === Number(profile.idProfile);
+    };
+
+    const handleEditPostFromFeed = () => {
+        setOpenPostMenuId(null);
+        navigate("/profile/posts");
+    };
+
+    const handleReportPost = () => {
+        setOpenPostMenuId(null);
+
+        window.alert(
+            "Your report has been submitted. Someone will analyze this post and it might be deleted within 30 days."
+        );
+    };
+
     return (
         <div className="feed-page">
             <header className="prolink-topbar">
@@ -450,19 +480,53 @@ function FeedPage() {
                         filteredPosts.map((post) => (
                             <article key={post.idPost} className="feed-post-card">
                                 <div className="feed-post-header">
-                                    <div className="post-author-avatar">
+                                    <Link
+                                        to={getProfilePath(post.idProfile)}
+                                        className="post-author-avatar avatar-link"
+                                    >
                                         {getInitial(post.authorName)}
-                                    </div>
+                                    </Link>
 
-                                    <div className="post-author-info">
+                                    <Link
+                                        to={getProfilePath(post.idProfile)}
+                                        className="post-author-info post-author-click"
+                                    >
                                         <h3>{post.authorName}</h3>
                                         <p>{post.authorLocation}</p>
                                         <span>{formatDate(post.createdAt)}</span>
-                                    </div>
+                                    </Link>
 
-                                    <button className="post-more-button" type="button">
-                                        •••
-                                    </button>
+                                    <div className="post-menu-wrapper">
+                                        <button
+                                            className="post-more-button"
+                                            type="button"
+                                            onClick={() =>
+                                                setOpenPostMenuId(openPostMenuId === post.idPost ? null : post.idPost)
+                                            }
+                                        >
+                                            •••
+                                        </button>
+
+                                        {openPostMenuId === post.idPost && (
+                                            <div className="post-menu">
+                                                {isOwnPost(post) ? (
+                                                    <button
+                                                        type="button"
+                                                        onClick={handleEditPostFromFeed}
+                                                    >
+                                                        Edit post
+                                                    </button>
+                                                ) : (
+                                                    <button
+                                                        type="button"
+                                                        onClick={handleReportPost}
+                                                    >
+                                                        Report post
+                                                    </button>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
 
                                 <div className="feed-post-content">

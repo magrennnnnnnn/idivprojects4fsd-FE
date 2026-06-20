@@ -136,6 +136,19 @@ function MessagesPage() {
         );
     });
 
+
+    const getProfilePath = (profileId) => {
+        if (!profileId) {
+            return "/messages";
+        }
+
+        if (profile && Number(profileId) === Number(profile.idProfile)) {
+            return "/profile";
+        }
+
+        return `/profiles/${profileId}`;
+    };
+
     return (
         <div className="feed-page">
             <header className="prolink-topbar">
@@ -201,14 +214,20 @@ function MessagesPage() {
                         filteredConnections.map((connection) => (
                             <article key={connection.idConnection} className="feed-post-card">
                                 <div className="feed-post-header">
-                                    <div className="post-author-avatar">
+                                    <Link
+                                        to={getProfilePath(getOtherProfileId(connection))}
+                                        className="post-author-avatar avatar-link"
+                                    >
                                         {getInitial(getOtherProfileName(connection))}
-                                    </div>
+                                    </Link>
 
-                                    <div className="post-author-info">
+                                    <Link
+                                        to={getProfilePath(getOtherProfileId(connection))}
+                                        className="post-author-info post-author-click"
+                                    >
                                         <h3>{getOtherProfileName(connection)}</h3>
                                         <p>{getOtherProfileLocation(connection)}</p>
-                                    </div>
+                                    </Link>
 
                                     <Link
                                         to={`/chat/${getOtherProfileId(connection)}`}
