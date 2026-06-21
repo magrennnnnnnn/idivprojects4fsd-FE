@@ -6,6 +6,7 @@ function ViewProfilePage() {
     const { profileId } = useParams();
 
     const [profile, setProfile] = useState(null);
+    const [currentUser, setCurrentUser] = useState(null);
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -14,11 +15,49 @@ function ViewProfilePage() {
         void loadProfile();
     }, [profileId]);
 
+    const hasRole = (user, role) => {
+        if (!user || !user.roles) {
+            return false;
+        }
+
+        if (Array.isArray(user.roles)) {
+            return user.roles.includes(role);
+        }
+
+        return user.roles === role;
+    };
+
+    const isCurrentUserCompany = () => {
+        return hasRole(currentUser, "COMPANY");
+    };
+
+    const loadCurrentUser = async () => {
+        const response = await fetch("http://localhost:8080/auth/me", {
+            method: "GET",
+            credentials: "include"
+        });
+
+        if (response.status === 401) {
+            navigate("/login");
+            return null;
+        }
+
+        if (!response.ok) {
+            return null;
+        }
+
+        const data = await response.json();
+        setCurrentUser(data);
+        return data;
+    };
+
     const loadProfile = async () => {
         setLoading(true);
         setError("");
 
         try {
+            await loadCurrentUser();
+
             const profileResponse = await fetch(`http://localhost:8080/profiles/${profileId}`, {
                 method: "GET",
                 credentials: "include"
@@ -63,6 +102,31 @@ function ViewProfilePage() {
         return name.trim().charAt(0).toUpperCase();
     };
 
+    const hasValidImageUrl = (imageUrl) => {
+        if (!imageUrl) return false;
+
+        const cleanUrl = imageUrl.trim();
+
+        return (
+            cleanUrl.length > 0 &&
+            cleanUrl !== "null" &&
+            cleanUrl !== "undefined" &&
+            cleanUrl.startsWith("/uploads/")
+        );
+    };
+
+    const getPostImageSrc = (imageUrl) => {
+        return `http://localhost:8080${imageUrl}`;
+    };
+
+    const isViewedCompanyProfile = () => {
+        if (profile?.role === "COMPANY" || profile?.roles === "COMPANY") {
+            return true;
+        }
+
+        return posts.some((post) => post.authorRole === "COMPANY");
+    };
+
     return (
         <div className="feed-page">
             <header className="prolink-topbar">
@@ -88,15 +152,19 @@ function ViewProfilePage() {
                     Feed
                 </Link>
 
-                <Link to="/network" className="nav-item">
-                    <span>☍</span>
-                    Network
-                </Link>
+                {!isCurrentUserCompany() && (
+                    <>
+                        <Link to="/network" className="nav-item">
+                            <span>☍</span>
+                            Network
+                        </Link>
 
-                <Link to="/messages" className="nav-item">
-                    <span>✉</span>
-                    Messages
-                </Link>
+                        <Link to="/messages" className="nav-item">
+                            <span>✉</span>
+                            Messages
+                        </Link>
+                    </>
+                )}
 
                 <Link to="/profile" className="nav-item">
                     <span>♙</span>
@@ -117,9 +185,16 @@ function ViewProfilePage() {
                                 </div>
 
                                 <div className="post-author-info">
+                                    {isViewedCompanyProfile() && (
+                                        <span className="company-badge">Company account</span>
+                                    )}
+
                                     <h3>{profile.name}</h3>
                                     <p>{profile.location}</p>
-                                    <span>{profile.personalDetails}</span>
+
+                                    {profile.personalDetails && (
+                                        <span>{profile.personalDetails}</span>
+                                    )}
                                 </div>
                             </div>
                         </section>
@@ -128,7 +203,7 @@ function ViewProfilePage() {
                             {posts.length === 0 ? (
                                 <div className="empty-feed-card">
                                     <h2>No posts yet</h2>
-                                    <p>This user has not posted anything yet.</p>
+                                    <p>This profile has not posted anything yet.</p>
                                 </div>
                             ) : (
                                 posts.map((post) => (
@@ -140,11 +215,14 @@ function ViewProfilePage() {
 
                                             <span>{formatDate(post.createdAt)}</span>
 
-                                            {post.imageUrl && (
+                                            {hasValidImageUrl(post.imageUrl) && (
                                                 <img
-                                                    src={`http://localhost:8080${post.imageUrl}`}
+                                                    src={getPostImageSrc(post.imageUrl)}
                                                     alt="Post"
                                                     className="post-image"
+                                                    onError={(e) => {
+                                                        e.currentTarget.style.display = "none";
+                                                    }}
                                                 />
                                             )}
                                         </div>

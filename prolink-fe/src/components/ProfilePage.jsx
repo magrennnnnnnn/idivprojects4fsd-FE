@@ -4,6 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 function ProfilePage() {
     const navigate = useNavigate();
     const [profile, setProfile] = useState(null);
+    const [currentUser, setCurrentUser] = useState(null);
+    const [loading, setLoading] = useState(false);
     const [workList, setWorkList] = useState([]);
     const [educationList, setEducationList] = useState([]);
     const [courseList, setCourseList] = useState([]);
@@ -77,18 +79,62 @@ function ProfilePage() {
         course: "Computer_Science"
     });
 
+    const hasRole = (user, role) => {
+        if (!user || !user.roles) {
+            return false;
+        }
+
+        if (Array.isArray(user.roles)) {
+            return user.roles.includes(role);
+        }
+
+        return user.roles === role;
+    };
+
+    const isCompanyAccount = () => {
+        return hasRole(currentUser, "COMPANY");
+    };
+
+    const loadCurrentUser = async () => {
+        const response = await fetch("http://localhost:8080/auth/me", {
+            method: "GET",
+            credentials: "include"
+        });
+
+        if (!response.ok) {
+            return null;
+        }
+
+        const data = await response.json();
+        setCurrentUser(data);
+        return data;
+    };
+
     useEffect(() => {
         void fetchAllData();
     }, []);
 
     const fetchAllData = async () => {
         try {
+            setLoading(true);
             setError("");
+
+            const loadedUser = await loadCurrentUser();
+
+            if (!loadedUser) {
+                navigate("/login");
+                return;
+            }
 
             const profileResponse = await fetch("http://localhost:8080/profiles/me", {
                 method: "GET",
                 credentials: "include"
             });
+
+            if (profileResponse.status === 401) {
+                navigate("/login");
+                return;
+            }
 
             if (!profileResponse.ok) {
                 throw new Error("Could not load profile");
@@ -100,6 +146,13 @@ function ProfilePage() {
             setName(profileData.name || "");
             setLocation(profileData.location || "");
             setPersonalDetails(profileData.personalDetails || "");
+
+            if (hasRole(loadedUser, "COMPANY")) {
+                setWorkList([]);
+                setEducationList([]);
+                setCourseList([]);
+                return;
+            }
 
             const profileId = profileData.idProfile;
 
@@ -136,7 +189,9 @@ function ProfilePage() {
                 setCourseList([]);
             }
         } catch (err) {
-            setError(err.message);
+            setError(err.message || "Could not load profile");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -515,6 +570,107 @@ function ProfilePage() {
             <div className="profile-page profile-modern-root">
                 <div className="profile-card profile-modern-container">
                     <p className="subtitle">Loading profile...</p>
+                    {error && <p className="error-message">{error}</p>}
+                </div>
+            </div>
+        );
+    }
+
+    if (isCompanyAccount()) {
+        return (
+            <div className="profile-page profile-modern-root">
+                <div className="profile-card profile-modern-container">
+                    {!editMode ? (
+                        <>
+                            <header className="profile-modern-header">
+                                <div className="profile-modern-header-top">
+                                    <div className="profile-modern-name-block">
+                                        <span className="company-badge">Company account</span>
+
+                                        <h1 className="profile-modern-name">{profile.name}</h1>
+
+                                        <div className="profile-modern-location-badge">
+                                            <span className="profile-modern-dot" />
+                                            {profile.location}
+                                        </div>
+                                    </div>
+
+                                    <div className="profile-modern-actions">
+                                        <Link to="/feed" className="profile-modern-button">
+                                            Feed
+                                        </Link>
+
+                                        <div className="settings-dropdown">
+                                            <button className="profile-modern-button" type="button">
+                                                Settings
+                                            </button>
+
+                                            <div className="settings-menu">
+                                                <Link to="/profile/posts" className="settings-menu-item">
+                                                    Posts History
+                                                </Link>
+                                            </div>
+                                        </div>
+
+                                        <button
+                                            className="profile-modern-button profile-modern-button-primary"
+                                            onClick={() => setEditMode(true)}
+                                        >
+                                            Edit Profile
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <p className="profile-modern-about-text">
+                                    {profile.personalDetails}
+                                </p>
+                            </header>
+
+                            <div className="profile-modern-footer-line">
+                                <span>{profile.name}</span>
+                                <span className="profile-modern-footer-dot" />
+                                <span>Company Profile</span>
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <h1 className="profile-name">Edit Company Profile</h1>
+
+                            <form onSubmit={handleProfileUpdate} className="register-form">
+                                <label>Company Name</label>
+                                <input
+                                    type="text"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    required
+                                />
+
+                                <label>Location</label>
+                                <input
+                                    type="text"
+                                    value={location}
+                                    onChange={(e) => setLocation(e.target.value)}
+                                    required
+                                />
+
+                                <label>Company Description</label>
+                                <textarea
+                                    className="profile-textarea"
+                                    value={personalDetails}
+                                    onChange={(e) => setPersonalDetails(e.target.value)}
+                                    required
+                                />
+
+                                <button type="submit">Save Changes</button>
+                            </form>
+
+                            <button className="cancel-button" onClick={() => setEditMode(false)}>
+                                Cancel
+                            </button>
+                        </>
+                    )}
+
+                    {message && <p className="success-message">{message}</p>}
                     {error && <p className="error-message">{error}</p>}
                 </div>
             </div>
