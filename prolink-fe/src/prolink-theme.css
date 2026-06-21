@@ -570,6 +570,27 @@ body {
     background: rgba(255, 255, 255, 0.06);
 }
 
+.post-action-row {
+    display: flex;
+    gap: 0.7rem;
+    margin-top: 1rem;
+    justify-content: flex-end;
+}
+
+.company-badge {
+    display: inline-flex !important;
+    width: fit-content;
+    margin-top: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #e8e6e0 !important;
+    font-size: 0.7rem !important;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
 
 
 @media (max-width: 800px) {

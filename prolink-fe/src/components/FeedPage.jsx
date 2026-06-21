@@ -21,6 +21,8 @@ function FeedPage() {
     const [sentRequests, setSentRequests] = useState([]);
     const [receivedRequests, setReceivedRequests] = useState([]);
     const [openPostMenuId, setOpenPostMenuId] = useState(null);
+    const [currentUser, setCurrentUser] = useState(null);
+    const [followedCompanyIds, setFollowedCompanyIds] = useState([]);
 
     useEffect(() => {
         void loadFeedPage();
@@ -39,6 +41,7 @@ function FeedPage() {
 
             await Promise.all([
                 loadPosts(loadedProfile),
+                loadNetworkState(),
                 loadNetworkState()
             ]);
         } catch (err) {
@@ -312,12 +315,20 @@ function FeedPage() {
         );
     });
 
-    const shouldShowConnectButton = (postProfileId) => {
+    const shouldShowConnectButton = (postProfileId, authorRole) => {
         if (!profile || !postProfileId) {
             return false;
         }
 
-        if (postProfileId === profile.idProfile) {
+        if (hasRole(currentUser, "COMPANY")) {
+            return false;
+        }
+
+        if (authorRole === "COMPANY") {
+            return false;
+        }
+
+        if (Number(postProfileId) === Number(profile.idProfile)) {
             return false;
         }
 
@@ -382,6 +393,127 @@ function FeedPage() {
 
     const getPostImageSrc = (imageUrl) => {
         return `http://localhost:8080${imageUrl}`;
+    };
+
+    const hasRole = (user, role) => {
+        if (!user || !user.roles) {
+            return false;
+        }
+
+        if (Array.isArray(user.roles)) {
+            return user.roles.includes(role);
+        }
+
+        return user.roles === role;
+    };
+
+    const loadCurrentUser = async () => {
+        const response = await fetch("http://localhost:8080/auth/me", {
+            method: "GET",
+            credentials: "include"
+        });
+
+        if (response.status === 401) {
+            navigate("/login");
+            return null;
+        }
+
+        if (!response.ok) {
+            return null;
+        }
+
+        const data = await response.json();
+        setCurrentUser(data);
+        return data;
+    };
+
+    const loadFollowedCompanies = async () => {
+        const response = await fetch("http://localhost:8080/company-follows/me/company-ids", {
+            method: "GET",
+            credentials: "include"
+        });
+
+        if (response.status === 401) {
+            navigate("/login");
+            return;
+        }
+
+        if (response.ok) {
+            const data = await response.json();
+            setFollowedCompanyIds(data);
+        }
+    };
+
+    const isCompanyPost = (post) => {
+        return post.authorRole === "COMPANY";
+    };
+
+    const isFollowingCompany = (companyProfileId) => {
+        return followedCompanyIds.some((id) => Number(id) === Number(companyProfileId));
+    };
+
+    const followCompany = async (companyProfileId) => {
+        setError("");
+        setMessage("");
+
+        try {
+            const response = await fetch(`http://localhost:8080/company-follows/${companyProfileId}`, {
+                method: "POST",
+                credentials: "include"
+            });
+
+            if (response.status === 401) {
+                navigate("/login");
+                return;
+            }
+
+            if (!response.ok) {
+                const text = await response.text();
+                throw new Error(text || "Could not follow company");
+            }
+
+            setFollowedCompanyIds((current) => {
+                if (current.some((id) => Number(id) === Number(companyProfileId))) {
+                    return current;
+                }
+
+                return [...current, companyProfileId];
+            });
+
+            setMessage("Company followed");
+        } catch (err) {
+            setError(err.message || "Could not follow company");
+        }
+    };
+
+    const unfollowCompany = async (companyProfileId) => {
+        setError("");
+        setMessage("");
+
+        try {
+            const response = await fetch(`http://localhost:8080/company-follows/${companyProfileId}`, {
+                method: "DELETE",
+                credentials: "include"
+            });
+
+            if (response.status === 401) {
+                navigate("/login");
+                return;
+            }
+
+            if (!response.ok) {
+                const text = await response.text();
+                throw new Error(text || "Could not unfollow company");
+            }
+
+            setFollowedCompanyIds((current) =>
+                current.filter((id) => Number(id) !== Number(companyProfileId))
+            );
+
+            setMessage("Company unfollowed");
+        } catch (err) {
+            setError(err.message || "Could not unfollow company");
+        }
     };
 
     return (
@@ -567,15 +699,37 @@ function FeedPage() {
                                     )}
                                 </div>
 
-                                {shouldShowConnectButton(post.idProfile) && (
-                                    <button
-                                        type="button"
-                                        className="post-submit-button"
-                                        onClick={() => sendConnectionRequest(post.idProfile)}
-                                    >
-                                        Connect
-                                    </button>
-                                )}
+                                <div className="post-action-row">
+                                    {shouldShowConnectButton(post.idProfile, post.authorRole) && (
+                                        <button
+                                            type="button"
+                                            className="post-submit-button"
+                                            onClick={() => sendConnectionRequest(post.idProfile)}
+                                        >
+                                            Connect
+                                        </button>
+                                    )}
+
+                                    {isCompanyPost(post) &&
+                                        Number(profile?.idProfile) !== Number(post.idProfile) &&
+                                        !hasRole(currentUser, "COMPANY") && (
+                                            <button
+                                                type="button"
+                                                className={
+                                                    isFollowingCompany(post.idProfile)
+                                                        ? "cancel-button"
+                                                        : "post-submit-button"
+                                                }
+                                                onClick={() =>
+                                                    isFollowingCompany(post.idProfile)
+                                                        ? unfollowCompany(post.idProfile)
+                                                        : followCompany(post.idProfile)
+                                                }
+                                            >
+                                                {isFollowingCompany(post.idProfile) ? "Followed" : "Follow"}
+                                            </button>
+                                        )}
+                                </div>
                             </article>
                         ))
                     )}
