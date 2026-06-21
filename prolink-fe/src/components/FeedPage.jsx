@@ -407,6 +407,7 @@ function FeedPage() {
         return user.roles === role;
     };
 
+
     const loadCurrentUser = async () => {
         const response = await fetch("http://localhost:8080/auth/me", {
             method: "GET",
@@ -426,6 +427,8 @@ function FeedPage() {
         setCurrentUser(data);
         return data;
     };
+
+
 
     const loadFollowedCompanies = async () => {
         const response = await fetch("http://localhost:8080/company-follows/me/company-ids", {
