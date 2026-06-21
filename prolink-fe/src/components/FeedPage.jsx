@@ -28,6 +28,42 @@ function FeedPage() {
         void loadFeedPage();
     }, []);
 
+    const hasRole = (user, role) => {
+        if (!user || !user.roles) {
+            return false;
+        }
+
+        if (Array.isArray(user.roles)) {
+            return user.roles.includes(role);
+        }
+
+        return user.roles === role;
+    };
+
+    const loadCurrentUser = async () => {
+        const response = await fetch("http://localhost:8080/auth/me", {
+            method: "GET",
+            credentials: "include"
+        });
+
+        if (response.status === 401) {
+            navigate("/login");
+            return null;
+        }
+
+        if (!response.ok) {
+            return null;
+        }
+
+        const data = await response.json();
+        setCurrentUser(data);
+        return data;
+    };
+
+    const isCompanyAccount = () => {
+        return hasRole(currentUser, "COMPANY");
+    };
+
     const loadFeedPage = async () => {
         setLoading(true);
         setError("");
@@ -40,9 +76,10 @@ function FeedPage() {
             }
 
             await Promise.all([
+                loadCurrentUser(),
                 loadPosts(loadedProfile),
                 loadNetworkState(),
-                loadNetworkState()
+                loadFollowedCompanies()
             ]);
         } catch (err) {
             setError(err.message || "Something went wrong");
@@ -316,7 +353,7 @@ function FeedPage() {
     });
 
     const shouldShowConnectButton = (postProfileId, authorRole) => {
-        if (!profile || !postProfileId) {
+        if (!profile || !postProfileId || !currentUser) {
             return false;
         }
 
@@ -395,38 +432,6 @@ function FeedPage() {
         return `http://localhost:8080${imageUrl}`;
     };
 
-    const hasRole = (user, role) => {
-        if (!user || !user.roles) {
-            return false;
-        }
-
-        if (Array.isArray(user.roles)) {
-            return user.roles.includes(role);
-        }
-
-        return user.roles === role;
-    };
-
-
-    const loadCurrentUser = async () => {
-        const response = await fetch("http://localhost:8080/auth/me", {
-            method: "GET",
-            credentials: "include"
-        });
-
-        if (response.status === 401) {
-            navigate("/login");
-            return null;
-        }
-
-        if (!response.ok) {
-            return null;
-        }
-
-        const data = await response.json();
-        setCurrentUser(data);
-        return data;
-    };
 
 
 
@@ -537,7 +542,7 @@ function FeedPage() {
                 </div>
 
                 <div className="topbar-actions">
-                    <span className="notification-dot">●</span>
+
 
                     <Link to="/profile" className="small-avatar avatar-link">
                         {getInitial(profile?.name)}
@@ -551,15 +556,19 @@ function FeedPage() {
                     Feed
                 </Link>
 
-                <Link to="/network" className="nav-item">
-                    <span>☍</span>
-                    Network
-                </Link>
+                {currentUser && !isCompanyAccount() && (
+                    <>
+                        <Link to="/network" className="nav-item">
+                            <span>☍</span>
+                            Network
+                        </Link>
 
-                <Link to="/messages" className="nav-item">
-                    <span>✉</span>
-                    Messages
-                </Link>
+                        <Link to="/messages" className="nav-item">
+                            <span>✉</span>
+                            Messages
+                        </Link>
+                    </>
+                )}
 
                 <Link to="/profile" className="nav-item">
                     <span>♙</span>
