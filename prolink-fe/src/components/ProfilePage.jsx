@@ -131,6 +131,22 @@ function ProfilePage() {
         void fetchAllData();
     }, []);
 
+    const handleLogout = async () => {
+        setMessage("");
+        setError("");
+
+        try {
+            await fetch("http://localhost:8080/auth/logout", {
+                method: "POST",
+                credentials: "include"
+            });
+
+            navigate("/login");
+        } catch (err) {
+            setError("Could not log out");
+        }
+    };
+
     const fetchAllData = async () => {
         try {
             setLoading(true);
@@ -635,6 +651,14 @@ function ProfilePage() {
                                         >
                                             Edit Profile
                                         </button>
+
+                                        <button
+                                            className="profile-modern-button"
+                                            type="button"
+                                            onClick={handleLogout}
+                                        >
+                                            Logout
+                                        </button>
                                     </div>
                                 </div>
 
@@ -732,6 +756,14 @@ function ProfilePage() {
                                         onClick={() => setEditMode(true)}
                                     >
                                         Edit Profile
+                                    </button>
+
+                                    <button
+                                        className="profile-modern-button"
+                                        type="button"
+                                        onClick={handleLogout}
+                                    >
+                                        Logout
                                     </button>
                                 </div>
                             </div>
