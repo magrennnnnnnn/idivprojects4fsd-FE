@@ -29,10 +29,11 @@ function ProfilePage() {
         endDateWork: "",
         onGoingWork: false,
         workSkills: "",
-        work: "Software_Development",
-        workLocation: "Remote",
-        workScheduleType: "Full_Time"
+        work: "SOFTWARE_DEVELOPMENT",
+        workLocation: "REMOTE",
+        workScheduleType: "FULL_TIME"
     });
+
 
     const [editingEducationData, setEditingEducationData] = useState({
         institutionName: "",
@@ -48,7 +49,7 @@ function ProfilePage() {
         startDateCourse: "",
         endDateCourse: "",
         courseSkills: "",
-        course: "Computer_Science"
+        course: "COMPUTER_SCIENCE"
     });
 
     const [newWork, setNewWork] = useState({
@@ -57,9 +58,9 @@ function ProfilePage() {
         endDateWork: "",
         onGoingWork: false,
         workSkills: "",
-        work: "Software_Development",
-        workLocation: "Remote",
-        workScheduleType: "Full_Time"
+        work: "SOFTWARE_DEVELOPMENT",
+        workLocation: "REMOTE",
+        workScheduleType: "FULL_TIME"
     });
 
     const [newEducation, setNewEducation] = useState({
@@ -76,7 +77,7 @@ function ProfilePage() {
         startDateCourse: "",
         endDateCourse: "",
         courseSkills: "",
-        course: "Computer_Science"
+        course: "COMPUTER_SCIENCE"
     });
 
     const hasRole = (user, role) => {
