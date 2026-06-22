@@ -756,13 +756,7 @@ function ProfilePage() {
                                 {profile.personalDetails}
                             </p>
 
-                            <button
-                                className="profile-modern-email-button"
-                                type="button"
-                                onClick={requestProfileImprovementEmail}
-                            >
-                                Request profile improvement email
-                            </button>
+                          
                         </header>
 
                         <section className="profile-modern-section">
