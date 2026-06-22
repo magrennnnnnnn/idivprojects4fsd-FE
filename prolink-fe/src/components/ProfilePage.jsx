@@ -828,11 +828,11 @@ function ProfilePage() {
                                                         })
                                                     }
                                                 >
-                                                    <option value="Artificial_Intelligence">Artificial Intelligence</option>
-                                                    <option value="Software_Development">Software Development</option>
-                                                    <option value="Cybersecurity">Cybersecurity</option>
-                                                    <option value="Cloud_Computing">Cloud Computing</option>
-                                                    <option value="Data_Science">Data Science</option>
+                                                    <option value="ARTIFICIAL_INTELLIGENCE">Artificial Intelligence</option>
+                                                    <option value="SOFTWARE_DEVELOPMENT">Software Development</option>
+                                                    <option value="CYBERSECURITY">Cybersecurity</option>
+                                                    <option value="CLOUD_COMPUTING">Cloud Computing</option>
+                                                    <option value="DATA_SCIENCE">Data Science</option>
                                                 </select>
 
                                                 <label>Work Location</label>
@@ -845,9 +845,9 @@ function ProfilePage() {
                                                         })
                                                     }
                                                 >
-                                                    <option value="On_site">On site</option>
-                                                    <option value="Remote">Remote</option>
-                                                    <option value="Hybrid">Hybrid</option>
+                                                    <option value="ON_SITE">On site</option>
+                                                    <option value="REMOTE">Remote</option>
+                                                    <option value="HYBRID">Hybrid</option>
                                                 </select>
 
                                                 <label>Schedule</label>
@@ -860,9 +860,9 @@ function ProfilePage() {
                                                         })
                                                     }
                                                 >
-                                                    <option value="Full_Time">Full Time</option>
-                                                    <option value="Part_Time">Part Time</option>
-                                                    <option value="Internship">Internship</option>
+                                                    <option value="FULL_TIME">Full Time</option>
+                                                    <option value="PART_TIME">Part Time</option>
+                                                    <option value="INTERNSHIP">Internship</option>
                                                 </select>
 
                                                 <button type="submit">Save Work</button>
@@ -1162,12 +1162,12 @@ function ProfilePage() {
                                                         })
                                                     }
                                                 >
-                                                    <option value="Computer_Science">Computer Science</option>
-                                                    <option value="Software_Engineering">Software Engineering</option>
-                                                    <option value="Artificial_Intelligence">Artificial Intelligence</option>
-                                                    <option value="Data_Science">Data Science</option>
-                                                    <option value="Cybersecurity">Cybersecurity</option>
-                                                    <option value="Information_Technology">Information Technology</option>
+                                                    <option value="COMPUTER_SCIENCE">Computer Science</option>
+                                                    <option value="SOFTWARE_ENGINEERING">Software Engineering</option>
+                                                    <option value="ARTIFICIAL_INTELLIGENCE">Artificial Intelligence</option>
+                                                    <option value="DATA_SCIENCE">Data Science</option>
+                                                    <option value="CYBERSECURITY">Cybersecurity</option>
+                                                    <option value="INFORMATION_TECHNOLOGY">Information Technology</option>
                                                 </select>
 
                                                 <button type="submit">Save Course</button>
