@@ -81,15 +81,31 @@ function ProfilePage() {
     });
 
     const hasRole = (user, role) => {
-        if (!user || !user.roles) {
+        if (!user) {
             return false;
         }
 
-        if (Array.isArray(user.roles)) {
-            return user.roles.includes(role);
+        const userRoles = user.roles || user.role;
+
+        if (!userRoles) {
+            return false;
         }
 
-        return user.roles === role;
+        if (Array.isArray(userRoles)) {
+            return userRoles.some((userRole) => {
+                if (typeof userRole === "string") {
+                    return userRole === role;
+                }
+
+                return userRole?.name === role || userRole?.authority === role;
+            });
+        }
+
+        if (typeof userRoles === "string") {
+            return userRoles === role;
+        }
+
+        return userRoles?.name === role || userRoles?.authority === role;
     };
 
     const isCompanyAccount = () => {
@@ -292,9 +308,9 @@ function ProfilePage() {
                 endDateWork: "",
                 onGoingWork: false,
                 workSkills: "",
-                work: "Software_Development",
-                workLocation: "Remote",
-                workScheduleType: "Full_Time"
+                work: "SOFTWARE_DEVELOPMENT",
+                workLocation: "REMOTE",
+                workScheduleType: "FULL_TIME"
             });
 
             setMessage("Work added successfully!");
@@ -380,7 +396,7 @@ function ProfilePage() {
                 startDateCourse: "",
                 endDateCourse: "",
                 courseSkills: "",
-                course: "Computer_Science"
+                course: "COMPUTER_SCIENCE"
             });
 
             setMessage("Course added successfully!");
@@ -398,9 +414,9 @@ function ProfilePage() {
             endDateWork: work.endDateWork || "",
             onGoingWork: work.onGoingWork || false,
             workSkills: work.workSkills || "",
-            work: work.work || "Software_Development",
-            workLocation: work.workLocation || "Remote",
-            workScheduleType: work.workScheduleType || "Full_Time"
+            work: work.work || "SOFTWARE_DEVELOPMENT",
+            workLocation: work.workLocation || "REMOTE",
+            workScheduleType: work.workScheduleType || "FULL_TIME"
         });
     };
 
@@ -423,7 +439,7 @@ function ProfilePage() {
             startDateCourse: course.startDateCourse || "",
             endDateCourse: course.endDateCourse || "",
             courseSkills: course.courseSkills || "",
-            course: course.course || "Computer_Science"
+            course: course.course || "COMPUTER_SCIENCE"
         });
     };
 
@@ -1348,11 +1364,11 @@ function ProfilePage() {
                                         })
                                     }
                                 >
-                                    <option value="Artificial_Intelligence">Artificial Intelligence</option>
-                                    <option value="Software_Development">Software Development</option>
-                                    <option value="Cybersecurity">Cybersecurity</option>
-                                    <option value="Cloud_Computing">Cloud Computing</option>
-                                    <option value="Data_Science">Data Science</option>
+                                    <option value="ARTIFICIAL_INTELLIGENCE">Artificial Intelligence</option>
+                                    <option value="SOFTWARE_DEVELOPMENT">Software Development</option>
+                                    <option value="CYBERSECURITY">Cybersecurity</option>
+                                    <option value="CLOUD_COMPUTING">Cloud Computing</option>
+                                    <option value="DATA_SCIENCE">Data Science</option>
                                 </select>
 
                                 <label>Work Location</label>
@@ -1365,9 +1381,9 @@ function ProfilePage() {
                                         })
                                     }
                                 >
-                                    <option value="On_site">On site</option>
-                                    <option value="Remote">Remote</option>
-                                    <option value="Hybrid">Hybrid</option>
+                                    <option value="ON_SITE">On site</option>
+                                    <option value="REMOTE">Remote</option>
+                                    <option value="HYBRID">Hybrid</option>
                                 </select>
 
                                 <label>Schedule</label>
@@ -1380,9 +1396,9 @@ function ProfilePage() {
                                         })
                                     }
                                 >
-                                    <option value="Full_Time">Full Time</option>
-                                    <option value="Part_Time">Part Time</option>
-                                    <option value="Internship">Internship</option>
+                                    <option value="FULL_TIME">Full Time</option>
+                                    <option value="PART_TIME">Part Time</option>
+                                    <option value="INTERNSHIP">Internship</option>
                                 </select>
 
                                 <button type="submit">Add Work</button>
@@ -1546,12 +1562,12 @@ function ProfilePage() {
                                         })
                                     }
                                 >
-                                    <option value="Computer_Science">Computer Science</option>
-                                    <option value="Software_Engineering">Software Engineering</option>
-                                    <option value="Artificial_Intelligence">Artificial Intelligence</option>
-                                    <option value="Data_Science">Data Science</option>
-                                    <option value="Cybersecurity">Cybersecurity</option>
-                                    <option value="Information_Technology">Information Technology</option>
+                                    <option value="COMPUTER_SCIENCE">Computer Science</option>
+                                    <option value="SOFTWARE_ENGINEERING">Software Engineering</option>
+                                    <option value="ARTIFICIAL_INTELLIGENCE">Artificial Intelligence</option>
+                                    <option value="DATA_SCIENCE">Data Science</option>
+                                    <option value="CYBERSECURITY">Cybersecurity</option>
+                                    <option value="INFORMATION_TECHNOLOGY">Information Technology</option>
                                 </select>
 
                                 <button type="submit">Add Course</button>
