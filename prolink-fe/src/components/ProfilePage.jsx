@@ -633,17 +633,9 @@ function ProfilePage() {
                                             Feed
                                         </Link>
 
-                                        <div className="settings-dropdown">
-                                            <button className="profile-modern-button" type="button">
-                                                Settings
-                                            </button>
-
-                                            <div className="settings-menu">
-                                                <Link to="/profile/posts" className="settings-menu-item">
-                                                    Posts History
-                                                </Link>
-                                            </div>
-                                        </div>
+                                        <Link to="/profile/posts" className="profile-modern-button">
+                                            Settings
+                                        </Link>
 
                                         <button
                                             className="profile-modern-button profile-modern-button-primary"
@@ -739,17 +731,9 @@ function ProfilePage() {
                                         Feed
                                     </Link>
 
-                                    <div className="settings-dropdown">
-                                        <button className="profile-modern-button" type="button">
-                                            Settings
-                                        </button>
-
-                                        <div className="settings-menu">
-                                            <Link to="/profile/posts" className="settings-menu-item">
-                                                Posts History
-                                            </Link>
-                                        </div>
-                                    </div>
+                                    <Link to="/profile/posts" className="profile-modern-button">
+                                        Settings
+                                    </Link>
 
                                     <button
                                         className="profile-modern-button profile-modern-button-primary"
